@@ -16,21 +16,13 @@ bool comp(DataStruct a, DataStruct b) {
 }
 
 int main() {
-  DataStruct dstr1, dstr2, dstr3;
+  std::string input;
+  std::vector<DataStruct> vector;
 
-  dstr1.key1 = 1;
-  dstr2.key1 = 20;
-  dstr3.key1 = 300;
-
-  dstr1.key2 = std::complex<double>(1, 0);
-  dstr2.key2 = std::complex<double>(20, 0);
-  dstr3.key2 = std::complex<double>(300, 0);
-
-  dstr1.key3 = "lor";
-  dstr2.key3 = "lorem";
-  dstr3.key3 = "lorem ipsum";
-
-  std::vector<DataStruct> vector = {dstr3, dstr2, dstr1};
+  while (std::cin) {
+    std::cin >> input;
+    // std::copy(input.find('('), input.find(')'));
+  }
 
   for (int i = 0; i < vector.size(); i++) {
     std::cout << vector[i] << "\n";
