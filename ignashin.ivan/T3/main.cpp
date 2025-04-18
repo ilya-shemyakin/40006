@@ -22,6 +22,8 @@ void areaMean(std::vector<Polygon>& data);
 void areaNum(int arg, std::vector<Polygon>& data);
 double calculateArea(std::vector<Point>& points);
 void maxMin(std::string& command, std::string& arg, std::vector<Polygon> data);
+void count(std::string arg, std::vector<Polygon> data);
+void count(int arg, std::vector<Polygon> data);
 
 
 int main() {
@@ -63,11 +65,32 @@ int main() {
             else if (isNumber(arg)) {
                 areaNum(std::stoi(arg), data);
             }
+            else {
+                std::cout << "<INVALID COMMAND>\n";
+            }
         }
         else if (command == "MAX" || command == "MIN") {
             std::string arg;
             std::cin >> arg;
+            if (arg == "AREA" || arg == "VERTEXES" || isNumber(arg)) {
                 maxMin(command, arg, data);
+            }
+            else {
+                std::cout << "<INVALID COMMAND>\n";
+            }
+        }
+        else if (command == "COUNT") {
+            std::string arg;
+            std::cin >> arg;
+            if (arg == "EVEN" || arg == "ODD") {
+                count(arg, data);
+            }
+            else if (isNumber(arg)) {
+                count(std::stoi(arg), data);
+            }
+            else {
+                std::cout << "<INVALID COMMAND>\n";
+            }
         }
         else {
             std::cout << "<INVALID COMMAND>\n";
@@ -221,4 +244,36 @@ void maxMin(std::string& command, std::string& arg, std::vector<Polygon> data) {
             std::cout << calculateArea(output->points) << '\n';
         }
     }
+}
+
+void count(std::string arg, std::vector<Polygon> data) {
+    int mod = (arg == "EVEN") ? 0 : 1;
+
+    double output = std::accumulate(
+        data.begin(),
+        data.end(),
+        0.0,
+        [mod](double sum, Polygon& figure) {
+            if (figure.points.size() % 2 == mod) {
+                return sum + 1;
+            }
+            return sum;
+        }
+    );
+    std::cout << output << '\n';
+}
+
+void count(int arg, std::vector<Polygon> data) {
+    double output = std::accumulate(
+        data.begin(),
+        data.end(),
+        0.0,
+        [arg](double sum, Polygon& figure) {
+            if (figure.points.size() == arg) {
+                return sum + 1;
+            }
+            return sum;
+        }
+    );
+    std::cout << output << '\n';
 }
