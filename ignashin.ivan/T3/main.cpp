@@ -21,6 +21,7 @@ void areaEvenOdd(std::string& arg, std::vector<Polygon>& data);
 void areaMean(std::vector<Polygon>& data);
 void areaNum(int arg, std::vector<Polygon>& data);
 double calculateArea(std::vector<Point>& points);
+void maxMin(std::string& command, std::string& arg, std::vector<Polygon> data);
 
 
 int main() {
@@ -63,8 +64,10 @@ int main() {
                 areaNum(std::stoi(arg), data);
             }
         }
-        else if (command == "MAX") {
-            // ...
+        else if (command == "MAX" || command == "MIN") {
+            std::string arg;
+            std::cin >> arg;
+                maxMin(command, arg, data);
         }
         else {
             std::cout << "<INVALID COMMAND>\n";
@@ -103,8 +106,7 @@ std::istream& operator>>(std::istream& in, Polygon& poly) {
     return in;
 }
 
-bool isNumber(std::string& arg)
-{
+bool isNumber(std::string& arg) {
     try {
         std::stoi(arg);
         return true;
@@ -161,10 +163,9 @@ void areaNum(int arg, std::vector<Polygon>& data){
     std::cout << output << '\n';
 }
 
-double calculateArea(std::vector<Point>& points)
-{
+double calculateArea(std::vector<Point>& points) {
     double area = 0.0;
-    int n = points.size();
+    size_t n = points.size();
 
     for (int i = 0; i < n; ++i) {
         int j = (i + 1) % n;
@@ -172,4 +173,52 @@ double calculateArea(std::vector<Point>& points)
     }
 
     return std::abs(area) / 2.0;
+}
+
+void maxMin(std::string& command, std::string& arg, std::vector<Polygon> data) {
+    if (arg == "VERTEXES") {
+        if (command == "MAX") {
+            auto output = std::max_element(
+                data.begin(),
+                data.end(),
+                [](const Polygon& a, const Polygon& b) {
+                    return a.points.size() < b.points.size();
+                }
+            );
+            std::cout << output->points.size() << '\n';
+        }
+        else if (command == "MIN") {
+            auto output = std::min_element(
+                data.begin(),
+                data.end(),
+                [](const Polygon& a, const Polygon& b) {
+                    return a.points.size() < b.points.size();
+                }
+            );
+            std::cout << output->points.size() << '\n';
+        }
+    }
+
+    if (arg == "AREA") {
+        if (command == "MAX") {
+            auto output = std::max_element(
+                data.begin(),
+                data.end(),
+                [](Polygon& a, Polygon& b) {
+                    return calculateArea(a.points) < calculateArea(b.points);
+                }
+            );
+            std::cout << calculateArea(output->points) << '\n';
+        }
+        else if (command == "MIN") {
+            auto output = std::min_element(
+                data.begin(),
+                data.end(),
+                []( Polygon& a, Polygon& b) {
+                    return calculateArea(a.points) < calculateArea(b.points);
+                }
+            );
+            std::cout << calculateArea(output->points) << '\n';
+        }
+    }
 }
