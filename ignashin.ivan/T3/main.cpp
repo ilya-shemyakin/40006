@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -16,6 +17,10 @@ struct Polygon
 };
 
 
+std::istream& operator>>(std::istream& in, Point& p);
+std::istream& operator>>(std::istream& in, Polygon& poly);
+
+
 bool isNumber(std::string& arg);
 void areaEvenOdd(std::string& arg, std::vector<Polygon>& data);
 void areaMean(std::vector<Polygon>& data);
@@ -24,6 +29,7 @@ double calculateArea(std::vector<Point>& points);
 void maxMin(std::string& command, std::string& arg, std::vector<Polygon> data);
 void count(std::string arg, std::vector<Polygon> data);
 void count(int arg, std::vector<Polygon> data);
+void perms(Polygon& figure, std::vector<Polygon> data);
 
 
 int main() {
@@ -90,6 +96,20 @@ int main() {
             }
             else {
                 std::cout << "<INVALID COMMAND>\n";
+            }
+        }
+        else if (command == "PERMS") {
+            Polygon etalon;
+            std::string line;
+
+            std::getline(std::cin >> std::ws, line);
+            std::istringstream iss(line);
+
+            if (!(iss >> etalon)) {
+                std::cout << "<INVALID COMMAND>\n";
+            }
+            else {
+                perms(etalon, data);
             }
         }
         else {
@@ -276,4 +296,8 @@ void count(int arg, std::vector<Polygon> data) {
         }
     );
     std::cout << output << '\n';
+}
+
+void perms(Polygon& figure, std::vector<Polygon> data){
+    std::cout << "hello world" << '\n';
 }
