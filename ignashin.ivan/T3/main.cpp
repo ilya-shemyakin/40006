@@ -29,7 +29,7 @@ double calculateArea(std::vector<Point>& points);
 void maxMin(std::string& command, std::string& arg, std::vector<Polygon> data);
 void count(std::string arg, std::vector<Polygon> data);
 void count(int arg, std::vector<Polygon> data);
-void perms(Polygon& figure, std::vector<Polygon> data);
+void perms(Polygon& etalon, std::vector<Polygon> data);
 
 
 int main() {
@@ -298,6 +298,17 @@ void count(int arg, std::vector<Polygon> data) {
     std::cout << output << '\n';
 }
 
-void perms(Polygon& figure, std::vector<Polygon> data){
-    std::cout << "hello world" << '\n';
+void perms(Polygon& etalon, std::vector<Polygon> data){
+    auto count = std::count_if(data.begin(), data.end(),
+        [&etalon](const Polygon& poly) {
+            return poly.points.size() == etalon.points.size() &&
+                std::is_permutation(
+                    poly.points.begin(), poly.points.end(),
+                    etalon.points.begin(),
+                    [](const Point& a, const Point& b) {
+                        return a.x == b.x && a.y == b.y;
+                    });
+        });
+
+    std::cout << count << "\n";
 }
