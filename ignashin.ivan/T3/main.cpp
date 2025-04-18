@@ -30,6 +30,8 @@ void maxMin(std::string& command, std::string& arg, std::vector<Polygon> data);
 void count(std::string arg, std::vector<Polygon> data);
 void count(int arg, std::vector<Polygon> data);
 void perms(Polygon& etalon, std::vector<Polygon> data);
+void rightshapes(std::vector<Polygon>& data);
+bool hasRightAngle(std::vector<Point>& figure);
 
 
 int main() {
@@ -111,6 +113,9 @@ int main() {
             else {
                 perms(etalon, data);
             }
+        }
+        else if (command == "RIGHTSHAPES") {
+            rightshapes(data);
         }
         else {
             std::cout << "<INVALID COMMAND>\n";
@@ -311,4 +316,31 @@ void perms(Polygon& etalon, std::vector<Polygon> data){
         });
 
     std::cout << count << "\n";
+}
+
+void rightshapes(std::vector<Polygon>& data) {
+    int count = std::count_if(data.begin(), data.end(),
+        [](Polygon& figure) {
+            return hasRightAngle(figure.points);
+        });
+    std::cout << count << "\n";
+}
+
+
+bool hasRightAngle(std::vector<Point>& figure) {
+    for (size_t i = 0; i < figure.size(); ++i) {
+        const Point& prev = figure[(i + figure.size() - 1) % figure.size()];
+        const Point& curr = figure[i];
+        const Point& next = figure[(i + 1) % figure.size()];
+
+        int ba_x = prev.x - curr.x;
+        int ba_y = prev.y - curr.y;
+        int bc_x = next.x - curr.x;
+        int bc_y = next.y - curr.y;
+
+        int dot = ba_x * bc_x + ba_y * bc_y;
+
+        if (dot == 0) return true;
+    }
+    return false;
 }
