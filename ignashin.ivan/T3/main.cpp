@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <numeric>
 
 
 struct Point
@@ -14,7 +16,10 @@ struct Polygon
 };
 
 
-void area(std::string& arg, std::vector<Polygon>& data);
+bool isNumber(std::string& arg);
+void areaEvenOdd(std::string& arg, std::vector<Polygon>& data);
+void areaMean(std::vector<Polygon>& data);
+void areaNum(int arg, std::vector<Polygon>& data);
 double calculateArea(std::vector<Point>& points);
 
 
@@ -48,11 +53,14 @@ int main() {
         if (command == "AREA") {
             std::string arg;
             std::cin >> arg;
-            if (arg == "ODD") {
-                area(arg, data);
+            if (arg == "ODD" || arg == "EVEN") {
+                areaEvenOdd(arg, data);
             }
-            else if (arg == "EVEN") {
-                area(arg, data);
+            else if (arg == "MEAN") {
+                areaMean(data);
+            }
+            else if (isNumber(arg)) {
+                areaNum(std::stoi(arg), data);
             }
         }
         else if (command == "MAX") {
@@ -95,14 +103,61 @@ std::istream& operator>>(std::istream& in, Polygon& poly) {
     return in;
 }
 
-void area(std::string& arg, std::vector<Polygon>& data) {
-    double output = 0;
-    int mod = (arg == "EVEN") ? 0 : 1;
-    for (Polygon figure : data) {
-        if (figure.points.size() % 2 == mod) {
-            output += calculateArea(figure.points);
-        }
+bool isNumber(std::string& arg)
+{
+    try {
+        std::stoi(arg);
+        return true;
     }
+    catch (...) {
+        return false;
+    }
+}
+
+void areaEvenOdd(std::string& arg, std::vector<Polygon>& data) {
+    const int mod = (arg == "EVEN") ? 0 : 1;
+
+    double output = std::accumulate(
+        data.begin(),
+        data.end(),
+        0.0,
+        [mod](double sum, Polygon& figure) {
+            if (figure.points.size() % 2 == mod) {
+                return sum + calculateArea(figure.points);
+            }
+            return sum;
+        }
+    );
+
+    std::cout << output << '\n';
+}
+
+void areaMean(std::vector<Polygon>& data) {
+    double output = std::accumulate(
+        data.begin(),
+        data.end(),
+        0.0,
+        [](double sum, Polygon& figure) {
+            return sum + calculateArea(figure.points);
+        }
+    );
+
+    std::cout << output / data.size() << '\n';
+}
+
+void areaNum(int arg, std::vector<Polygon>& data){
+    double output = std::accumulate(
+        data.begin(),
+        data.end(),
+        0.0,
+        [arg](double sum, Polygon& figure) {
+            if (figure.points.size() == arg) {
+                return sum + calculateArea(figure.points);
+            }
+            return sum;
+        }
+    );
+
     std::cout << output << '\n';
 }
 
