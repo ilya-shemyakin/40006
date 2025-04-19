@@ -57,8 +57,8 @@ struct AreaComparator {
 };
 
 
-int main() {
-    const std::string filename = "input.TXT";
+int main(int argc, char* argv[]) {
+    const std::string filename = argv[1];
     std::vector<Polygon> data;
     std::ifstream input{ filename };
 
