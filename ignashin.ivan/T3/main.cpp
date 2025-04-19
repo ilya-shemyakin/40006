@@ -71,7 +71,7 @@ int main() {
             input.clear();
             input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-    }
+    }   
 
     for (Polygon i : data) {
         for (Point j : i.points) {
@@ -137,9 +137,6 @@ int main() {
         }
         else if (command == "RIGHTSHAPES") {
             rightshapes(data);
-        }
-        else if (!std::cin.eof()) {
-            break;
         }
         else {
             std::cout << "<INVALID COMMAND>\n";
