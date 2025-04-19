@@ -209,7 +209,8 @@ void areaMean(std::vector<Polygon>& data) {
         }
     );
 
-    std::cout << std::fixed << std::setprecision(1) << output / static_cast<double>(data.size()) << '\n';
+    std::cout << std::fixed << std::setprecision(1) <<
+        output / static_cast<double>(data.size()) << '\n';
 }
 
 void areaNum(int arg, std::vector<Polygon>& data){
