@@ -17,6 +17,15 @@ struct Polygon
 };
 
 
+struct EvenOddFilter {
+    int mod;
+    EvenOddFilter(std::string& arg) : mod(arg == "EVEN" ? 0 : 1) {}
+    bool operator()(const Polygon& figure) {
+        return figure.points.size() % 2 == mod;
+    }
+};
+
+
 std::istream& operator>>(std::istream& in, Point& p);
 std::istream& operator>>(std::istream& in, Polygon& poly);
 
@@ -272,19 +281,8 @@ void maxMin(std::string& command, std::string& arg, std::vector<Polygon> data) {
 }
 
 void count(std::string arg, std::vector<Polygon> data) {
-    int mod = (arg == "EVEN") ? 0 : 1;
-
-    double output = std::accumulate(
-        data.begin(),
-        data.end(),
-        0.0,
-        [mod](double sum, Polygon& figure) {
-            if (figure.points.size() % 2 == mod) {
-                return sum + 1;
-            }
-            return sum;
-        }
-    );
+    EvenOddFilter filter(arg);
+    double output = std::count_if(data.begin(), data.end(), filter);
     std::cout << output << '\n';
 }
 
