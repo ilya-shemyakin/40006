@@ -138,6 +138,9 @@ int main() {
         else if (command == "RIGHTSHAPES") {
             rightshapes(data);
         }
+        else if (!std::cin.eof()) {
+            break;
+        }
         else {
             std::cout << "<INVALID COMMAND>\n";
         }
