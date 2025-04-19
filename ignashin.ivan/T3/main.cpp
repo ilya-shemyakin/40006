@@ -5,6 +5,8 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <iomanip>
+#include <limits>
 
 
 struct Point
@@ -71,14 +73,8 @@ int main() {
             input.clear();
             input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-    }   
-
-    for (Polygon i : data) {
-        for (Point j : i.points) {
-            std::cout << j.x << ';' << j.y << ' ';
-        }
-        std::cout << '\n';
     }
+
 
     std::string command;
     while (std::cin >> command) {
@@ -200,7 +196,7 @@ void areaEvenOdd(std::string& arg, std::vector<Polygon>& data) {
         }
     );
 
-    std::cout << output << '\n';
+    std::cout << std::fixed << std::setprecision(1) << output << '\n';
 }
 
 void areaMean(std::vector<Polygon>& data) {
@@ -213,7 +209,7 @@ void areaMean(std::vector<Polygon>& data) {
         }
     );
 
-    std::cout << output / data.size() << '\n';
+    std::cout << std::fixed << std::setprecision(1) << output / static_cast<double>(data.size()) << '\n';
 }
 
 void areaNum(int arg, std::vector<Polygon>& data){
@@ -229,7 +225,7 @@ void areaNum(int arg, std::vector<Polygon>& data){
         }
     );
 
-    std::cout << output << '\n';
+    std::cout << std::fixed << std::setprecision(1) << output << '\n';
 }
 
 double calculateArea(std::vector<Point>& points) {
@@ -240,7 +236,6 @@ double calculateArea(std::vector<Point>& points) {
         int j = (i + 1) % n;
         area += (points[i].x * points[j].y) - (points[i].y * points[j].x);
     }
-
     return std::abs(area) / 2.0;
 }
 
@@ -256,18 +251,18 @@ void maxMin(std::string& command, std::string& arg, std::vector<Polygon> data) {
         auto output = (command == "MAX")
             ? std::max_element(data.begin(), data.end(), AreaComparator())
             : std::min_element(data.begin(), data.end(), AreaComparator());
-        std::cout << calculateArea(output->points) << '\n';
+        std::cout << std::fixed << std::setprecision(1) << calculateArea(output->points) << '\n';
     }
 }
 
 void count(std::string arg, std::vector<Polygon> data) {
     EvenOddFilter filter(arg);
-    double output = std::count_if(data.begin(), data.end(), filter);
+    int output = std::count_if(data.begin(), data.end(), filter);
     std::cout << output << '\n';
 }
 
 void count(int arg, std::vector<Polygon> data) {
-    double output = std::accumulate(
+    int output = std::accumulate(
         data.begin(),
         data.end(),
         0.0,
@@ -282,7 +277,7 @@ void count(int arg, std::vector<Polygon> data) {
 }
 
 void perms(Polygon& etalon, std::vector<Polygon> data){
-    auto count = std::count_if(data.begin(), data.end(),
+    auto output = std::count_if(data.begin(), data.end(),
         [&etalon](const Polygon& poly) {
             return poly.points.size() == etalon.points.size() &&
                 std::is_permutation(
@@ -292,8 +287,7 @@ void perms(Polygon& etalon, std::vector<Polygon> data){
                         return a.x == b.x && a.y == b.y;
                     });
         });
-
-    std::cout << count << "\n";
+    std::cout << output << "\n";
 }
 
 void rightshapes(std::vector<Polygon>& data) {
