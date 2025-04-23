@@ -47,4 +47,3 @@ std::istream &operator>>(std::istream &istream, DataStruct &dest);
 std::ostream &operator<<(std::ostream &ostream, const DataStruct &dest);
 
 #endif
-  
