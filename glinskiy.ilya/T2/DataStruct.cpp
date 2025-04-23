@@ -71,7 +71,8 @@ std::istream &operator>>(std::istream &istream, ComplexIO &&dest) {
   bool is_enclosed = str.substr(0, 3) == "#c(" && str[str.size() - 1] == ')';
   int space_pos = str.find(' ', 3);
 
-  if (str.size() > 6 && is_enclosed && space_pos != std::string::npos)
+  if (str.size() > 6 && is_enclosed &&
+      static_cast<std::size_t>(space_pos) != std::string::npos)
     try {
       double real = std::stod(str.substr(3, space_pos));
       double imag = std::stod(str.substr(space_pos + 1, str.size() - 1));
