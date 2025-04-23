@@ -1,4 +1,4 @@
-#include "DataStruct.cpp"
+#include "DataStruct.h"
 #include <algorithm>
 #include <complex>
 #include <iostream>
