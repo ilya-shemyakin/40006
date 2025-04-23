@@ -93,18 +93,6 @@ std::istream &operator>>(std::istream &istream, StringIO &&dest) {
   return std::getline(istream >> DelimiterIO{'"'}, dest.ref, '"');
 }
 
-std::istream &operator>>(std::istream &istream, LabelIO &&dest) {
-  std::istream::sentry sentry(istream);
-  if (!sentry)
-    return istream;
-
-  std::string data = "";
-  if ((istream >> StringIO{data}) && (data != dest.exp))
-    istream.setstate(std::ios::failbit);
-
-  return istream;
-}
-
 std::istream &operator>>(std::istream &istream, DataStruct &dest) {
   std::istream::sentry sentry(istream);
   if (!sentry)

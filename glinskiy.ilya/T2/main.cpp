@@ -30,4 +30,3 @@ bool comp(DataStruct a, DataStruct b) {
 
   return a.key3.length() < b.key3.length();
 }
-  

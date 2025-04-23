@@ -14,10 +14,6 @@ struct DelimiterIO {
   char exp;
 };
 
-struct LabelIO {
-  std::string exp;
-};
-
 struct UnsignedLongLongIO {
   unsigned long long &ref;
 };
@@ -47,8 +43,8 @@ std::istream &operator>>(std::istream &istream, DelimiterIO &&dest);
 std::istream &operator>>(std::istream &istream, UnsignedLongLongIO &&dest);
 std::istream &operator>>(std::istream &istream, ComplexIO &&dest);
 std::istream &operator>>(std::istream &istream, StringIO &&dest);
-std::istream &operator>>(std::istream &istream, LabelIO &&dest);
 std::istream &operator>>(std::istream &istream, DataStruct &dest);
 std::ostream &operator<<(std::ostream &ostream, const DataStruct &dest);
 
 #endif
+  
