@@ -52,8 +52,6 @@ std::istream &operator>>(std::istream &istream, UnsignedLongLongIO &&dest) {
 }
 
 std::istream &operator>>(std::istream &istream, ComplexIO &&dest) {
-  // #c(1.0 -1.0)
-  // #c(-1.0 1.0)
   std::istream::sentry sentry(istream);
   if (!sentry)
     return istream;
@@ -120,17 +118,24 @@ std::istream &operator>>(std::istream &istream, DataStruct &dest) {
   while (istream >> str) {
     if (str == "key1") {
       istream >> UnsignedLongLongIO{input.key1} >> DelimiterIO{':'};
-      has1 = true;
+      if (istream)
+        has1 = true;
+
     } else if (str == "key2") {
       istream >> ComplexIO{input.key2} >> DelimiterIO{':'};
-      has2 = true;
+      if (istream)
+        has2 = true;
+
     } else if (str == "key3") {
       istream >> StringIO{input.key3} >> DelimiterIO{':'};
-      has3 = true;
+      if (istream)
+        has3 = true;
+
     } else if (str == ")") {
       if (!has1 || !has2 || !has3)
         istream.setstate(std::ios::failbit);
       break;
+
     } else {
       istream.setstate(std::ios::failbit);
       break;
@@ -150,10 +155,9 @@ std::ostream &operator<<(std::ostream &ostream, const DataStruct &src) {
 
   iofmtguard fmtguard(ostream);
 
-  ostream << "(:key1 0x" << std::hex << std::uppercase << src.key1;
-  ostream << ":key2 #c(" << std::setprecision(1) << src.key2.real() << " "
-          << src.key2.imag() << ")";
-  ostream << ":key3 \"" << src.key3 << "\":)";
+  ostream << "(:key1 0x" << std::hex << std::uppercase << src.key1
+          << ":key2 #c(" << src.key2.real() << " " << src.key2.imag() << ")"
+          << ":key3 \"" << src.key3 << "\":)";
 
   return ostream;
 }
