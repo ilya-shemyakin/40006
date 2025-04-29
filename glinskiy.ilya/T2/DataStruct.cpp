@@ -131,7 +131,7 @@ std::ostream &operator<<(std::ostream &ostream, const DataStruct &src) {
   iofmtguard fmtguard(ostream);
 
   ostream << "(:key1 0x" << std::hex << std::uppercase << src.key1;
-  ostream << ":key2 #c(" << std::setprecision(2) << src.key2.real() << " "
+  ostream << ":key2 #c(" << std::fixed << std::setprecision(2) << src.key2.real() << " "
           << src.key2.imag() << ")";
   ostream << ":key3 \"" << src.key3 << "\":)";
 
