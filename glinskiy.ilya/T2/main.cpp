@@ -12,8 +12,15 @@ bool comp(DataStruct a, DataStruct b);
 int main() {
   std::vector<DataStruct> vector;
 
-  std::copy(std::istream_iterator<DataStruct>(std::cin),
-            std::istream_iterator<DataStruct>(), std::back_inserter(vector));
+  while (!std::cin.eof()) {
+    std::copy(std::istream_iterator<DataStruct>(std::cin),
+              std::istream_iterator<DataStruct>(), std::back_inserter(vector));
+
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+  }
 
   std::sort(vector.begin(), vector.end(), comp);
 

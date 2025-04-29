@@ -39,7 +39,7 @@ std::istream &operator>>(std::istream &istream, UnsignedLongLongIO &&dest) {
     str.push_back(tolower(chr));
   }
 
-  if (str.size() > 2 && str.substr(0, 2) == "0x") {
+  if (str.substr(0, 2) == "0x") {
     try {
       dest.ref = std::stoull(str, nullptr, 16);
     } catch (...) {
@@ -71,8 +71,7 @@ std::istream &operator>>(std::istream &istream, ComplexIO &&dest) {
   bool is_enclosed = str.substr(0, 3) == "#c(" && str[str.size() - 1] == ')';
   int space_pos = str.find(' ', 3);
 
-  if (str.size() > 6 && is_enclosed &&
-      static_cast<std::size_t>(space_pos) != std::string::npos)
+  if (is_enclosed && static_cast<std::size_t>(space_pos) != std::string::npos) {
     try {
       double real = std::stod(str.substr(3, space_pos));
       double imag = std::stod(str.substr(space_pos + 1, str.size() - 1));
@@ -80,7 +79,7 @@ std::istream &operator>>(std::istream &istream, ComplexIO &&dest) {
     } catch (...) {
       istream.setstate(std::ios::failbit);
     }
-  else
+  } else
     istream.setstate(std::ios::failbit);
 
   return istream;
@@ -132,7 +131,7 @@ std::ostream &operator<<(std::ostream &ostream, const DataStruct &src) {
   iofmtguard fmtguard(ostream);
 
   ostream << "(:key1 0x" << std::hex << std::uppercase << src.key1;
-  ostream << ":key2 #c(" << std::setprecision(1) << src.key2.real() << " "
+  ostream << ":key2 #c(" << std::setprecision(2) << src.key2.real() << " "
           << src.key2.imag() << ")";
   ostream << ":key3 \"" << src.key3 << "\":)";
 
