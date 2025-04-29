@@ -101,31 +101,18 @@ std::istream &operator>>(std::istream &istream, DataStruct &dest) {
 
   DataStruct input;
   std::string str;
-  bool has1 = false, has2 = false, has3 = false;
 
   istream >> DelimiterIO{'('} >> DelimiterIO{':'};
   while (istream >> str) {
-    if (str == "key1") {
+    if (str == "key1")
       istream >> UnsignedLongLongIO{input.key1} >> DelimiterIO{':'};
-      if (istream)
-        has1 = true;
-
-    } else if (str == "key2") {
+    else if (str == "key2")
       istream >> ComplexIO{input.key2} >> DelimiterIO{':'};
-      if (istream)
-        has2 = true;
-
-    } else if (str == "key3") {
+    else if (str == "key3")
       istream >> StringIO{input.key3} >> DelimiterIO{':'};
-      if (istream)
-        has3 = true;
-
-    } else if (str == ")") {
-      if (!has1 || !has2 || !has3)
-        istream.setstate(std::ios::failbit);
+    else if (str == ")")
       break;
-
-    } else {
+    else {
       istream.setstate(std::ios::failbit);
       break;
     }
@@ -144,9 +131,10 @@ std::ostream &operator<<(std::ostream &ostream, const DataStruct &src) {
 
   iofmtguard fmtguard(ostream);
 
-  ostream << "(:key1 0x" << std::hex << std::uppercase << src.key1
-          << ":key2 #c(" << src.key2.real() << " " << src.key2.imag() << ")"
-          << ":key3 \"" << src.key3 << "\":)";
+  ostream << "(:key1 0x" << std::hex << std::uppercase << src.key1;
+  ostream << ":key2 #c(" << std::setprecision(1) << src.key2.real() << " "
+          << src.key2.imag() << ")";
+  ostream << ":key3 \"" << src.key3 << "\":)";
 
   return ostream;
 }
