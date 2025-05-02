@@ -224,7 +224,7 @@ void areaMean(std::vector<Polygon>& data) {
         output / static_cast<double>(data.size()) << '\n';
 }
 
-void areaNum(int arg, std::vector<Polygon>& data){
+void areaNum(int arg, std::vector<Polygon>& data) {
     double output = std::accumulate(
         data.begin(),
         data.end(),
@@ -288,7 +288,7 @@ void count(int arg, std::vector<Polygon> data) {
     std::cout << output << '\n';
 }
 
-void perms(Polygon& etalon, std::vector<Polygon> data){
+void perms(Polygon& etalon, std::vector<Polygon> data) {
     auto output = std::count_if(data.begin(), data.end(),
         [&etalon](const Polygon& poly) {
             return poly.points.size() == etalon.points.size() &&
