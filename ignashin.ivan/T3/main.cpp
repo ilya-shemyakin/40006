@@ -328,4 +328,3 @@ bool hasRightAngle(std::vector<Point>& figure) {
     }
     return false;
 }
-
