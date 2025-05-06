@@ -72,7 +72,7 @@ std::istream& operator>>(std::istream& in, Point& point)
 std::istream& operator>>(std::istream& in, Polygon& polygon)
 {
     int vertexes;
-    if (!(in >> vertexes) && vertexes < 3)
+    if (!(in >> vertexes) || vertexes < 3)
     {
         in.setstate(std::ios::failbit);
         return in;
@@ -96,11 +96,6 @@ std::istream& operator>>(std::istream& in, Polygon& polygon)
 
 double polygon_area(const Polygon& polygon)
 {
-    if (polygon.points.size() < 3)
-    {
-        return 0;
-    }
-
     const auto& pts = polygon.points;
     auto sum = std::inner_product(
         pts.begin(),
