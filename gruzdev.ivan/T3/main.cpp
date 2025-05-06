@@ -161,7 +161,7 @@ void process_commands(const std::vector<Polygon>& polygons)
 
             else
             {
-                int vertexes;
+                size_t vertexes;
                 if (std::istringstream(subcommand) >> vertexes)
                 {
                     double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
@@ -245,7 +245,7 @@ void process_commands(const std::vector<Polygon>& polygons)
             }
             else
             {
-                int vertexes;
+                size_t vertexes;
                 if (std::istringstream(subcommand) >> vertexes)
                 {
                     auto counter = std::count_if(polygons.begin(), polygons.end(),
