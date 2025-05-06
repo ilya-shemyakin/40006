@@ -310,7 +310,8 @@ bool segment(const Point& p1, const Point& p2, const Point& q1, const Point& q2)
         (cross(q1, q2, p1) * cross(q1, q2, p2) <= 0);
 }
 
-bool do_intersect(const Polygon& poly1, const Polygon& poly2) {
+bool do_intersect(const Polygon& poly1, const Polygon& poly2)
+{
     if (&poly1 == &poly2)
     {
         return false;
