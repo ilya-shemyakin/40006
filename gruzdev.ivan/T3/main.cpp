@@ -47,11 +47,18 @@ int main(int argc, char* argv[])
     }
 
     std::vector<Polygon> polygons;
-    std::copy(
-        std::istream_iterator<Polygon>(inputFile),
-        std::istream_iterator<Polygon>(),
-        std::back_inserter(polygons)
-    );
+    while (!inputFile.eof())
+    {
+        if (inputFile.fail()) {
+            inputFile.clear();
+            inputFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        std::copy(
+            std::istream_iterator<Polygon>(inputFile),
+            std::istream_iterator<Polygon>(),
+            std::back_inserter(polygons)
+        );
+    }
 
     process_commands(polygons);
     return 0;
@@ -194,22 +201,22 @@ void process_commands(const std::vector<Polygon>& polygons)
                         [](const Polygon& poly1, const Polygon& poly2)
                         {
                             return polygon_area(poly1) < polygon_area(poly2);
-                        }):
+                        }) :
                     std::min_element(polygons.begin(), polygons.end(),
                         [](const Polygon& poly1, const Polygon& poly2) {
                             return polygon_area(poly1) < polygon_area(poly2);
                         });
-                std::cout << std::fixed << std::setprecision(1) << polygon_area(*extremum) << "\n";
+                        std::cout << std::fixed << std::setprecision(1) << polygon_area(*extremum) << "\n";
 
             }
             else if (subcommand == "VERTEXES")
             {
-                auto extremum = (cmd =="MAX")?
+                auto extremum = (cmd == "MAX") ?
                     std::max_element(polygons.begin(), polygons.end(),
                         [](const Polygon& poly1, const Polygon& poly2)
                         {
                             return poly1.points.size() < poly2.points.size();
-                        }):
+                        }) :
                     std::min_element(polygons.begin(), polygons.end(),
                         [](const Polygon& poly1, const Polygon& poly2) {
                             return poly1.points.size() < poly2.points.size();
@@ -293,7 +300,7 @@ bool segment(const Point& p1, const Point& p2, const Point& q1, const Point& q2)
     if (std::max(p1.x, p2.x) < std::min(q1.x, q2.x) ||
         std::max(q1.x, q2.x) < std::min(p1.x, p2.x) ||
         std::max(p1.y, p2.y) < std::min(q1.y, q2.y) ||
-        std::max(q1.y, q2.y) < std::min(p1.y, p2.y)){
+        std::max(q1.y, q2.y) < std::min(p1.y, p2.y)) {
         return false;
     }
 
