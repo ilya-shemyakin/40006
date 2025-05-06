@@ -72,7 +72,7 @@ std::istream& operator>>(std::istream& in, Point& point)
 std::istream& operator>>(std::istream& in, Polygon& polygon)
 {
     int vertexes;
-    if (!(in >> vertexes))
+    if (!(in >> vertexes) && vertexes < 3)
     {
         in.setstate(std::ios::failbit);
         return in;
