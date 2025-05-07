@@ -1,4 +1,7 @@
 #include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <vector>
 
 struct Point {
@@ -28,4 +31,41 @@ struct Polygon {
   bool operator==(Polygon &other) { return points == other.points; }
 };
 
-int main() {}
+std::vector<Polygon> readPolygons(const std::string &filename) {
+  std::ifstream in(filename);
+  std::vector<Polygon> result;
+  std::string line;
+
+  while (std::getline(in, line)) {
+    std::istringstream iss(line);
+    int pointCount;
+
+    if (!(iss >> pointCount) || pointCount <= 0)
+      continue;
+
+    std::vector<Point> points;
+
+    for (int i = 0; i < pointCount; ++i) {
+      char ch1, ch2, ch3;
+      int x, y;
+      iss >> ch1 >> x >> ch2 >> y >> ch3;
+
+      if (!iss || ch1 != '(' || ch2 != ';' || ch3 != ')') {
+        points.clear();
+        break;
+      }
+
+      points.push_back({x, y});
+    }
+
+    if (points.size() == pointCount) {
+      result.push_back({points});
+    }
+  }
+}
+
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    throw "Missing filename\n";
+  }
+}
