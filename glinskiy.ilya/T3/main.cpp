@@ -7,7 +7,8 @@
 struct Point {
   int x, y;
 
-  bool operator==(Point &other) { return x == other.x && y == other.y; }
+  // bool operator==(const Point &other) { return x == other.x && y == other.y;
+  // }
 };
 
 struct Polygon {
@@ -28,7 +29,7 @@ struct Polygon {
     return std::abs(a) / 2.0;
   }
 
-  bool operator==(Polygon &other) { return points == other.points; }
+  // bool operator==(const Polygon &other) { return points == other.points; }
 };
 
 std::vector<Polygon> readPolygons(const std::string &filename) {
@@ -62,10 +63,14 @@ std::vector<Polygon> readPolygons(const std::string &filename) {
       result.push_back({points});
     }
   }
+
+  return result;
 }
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
     throw "Missing filename\n";
   }
+
+  std::vector<Polygon> polygons = readPolygons(argv[1]);
 }
