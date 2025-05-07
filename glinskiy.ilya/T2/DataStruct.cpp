@@ -27,26 +27,7 @@ std::istream &operator>>(std::istream &istream, UnsignedLongLongIO &&dest) {
   if (!sentry)
     return istream;
 
-  std::string str;
-  char chr;
-
-  while (istream.get(chr)) {
-    if (chr == ':') {
-      istream.unget();
-      break;
-    }
-
-    str.push_back(tolower(chr));
-  }
-
-  if (str.substr(0, 2) == "0x") {
-    try {
-      dest.ref = std::stoull(str, nullptr, 16);
-    } catch (...) {
-      istream.setstate(std::ios::failbit);
-    };
-  } else
-    istream.setstate(std::ios::failbit);
+  istream >> DelimiterIO{'0'} >> DelimiterIO{'x'} >> std::hex >> dest.ref;
 
   return istream;
 }
@@ -56,31 +37,12 @@ std::istream &operator>>(std::istream &istream, ComplexIO &&dest) {
   if (!sentry)
     return istream;
 
-  std::string str, real, imag;
-  char chr;
+  double real, imag;
 
-  while (istream.get(chr)) {
-    if (chr == ':') {
-      istream.unget();
-      break;
-    }
+  istream >> DelimiterIO{'#'} >> DelimiterIO{'c'} >> DelimiterIO{'('} >> real >>
+      imag >> DelimiterIO{')'};
 
-    str.push_back(tolower(chr));
-  }
-
-  bool is_enclosed = str.substr(0, 3) == "#c(" && str[str.size() - 1] == ')';
-  int space_pos = str.find(' ', 3);
-
-  if (is_enclosed && static_cast<std::size_t>(space_pos) != std::string::npos) {
-    try {
-      double real = std::stod(str.substr(3, space_pos));
-      double imag = std::stod(str.substr(space_pos + 1, str.size() - 1));
-      dest.ref = std::complex<double>(real, imag);
-    } catch (...) {
-      istream.setstate(std::ios::failbit);
-    }
-  } else
-    istream.setstate(std::ios::failbit);
+  dest.ref = std::complex<double>(real, imag);
 
   return istream;
 }
@@ -97,6 +59,8 @@ std::istream &operator>>(std::istream &istream, DataStruct &dest) {
   std::istream::sentry sentry(istream);
   if (!sentry)
     return istream;
+
+  iofmtguard fmtguard(istream);
 
   DataStruct input;
   std::string str;
@@ -131,8 +95,8 @@ std::ostream &operator<<(std::ostream &ostream, const DataStruct &src) {
   iofmtguard fmtguard(ostream);
 
   ostream << "(:key1 0x" << std::hex << std::uppercase << src.key1;
-  ostream << ":key2 #c(" << std::fixed << std::setprecision(1) << src.key2.real() << " "
-          << src.key2.imag() << ")";
+  ostream << ":key2 #c(" << std::fixed << std::setprecision(1)
+          << src.key2.real() << " " << src.key2.imag() << ")";
   ostream << ":key3 \"" << src.key3 << "\":)";
 
   return ostream;
