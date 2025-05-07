@@ -191,7 +191,7 @@ namespace task01
         return out;
     }
 
-    // === Компаратор ===
+    // == Компаратор ==
     bool Comparator::operator()(const DataStruct& lhs,
         const DataStruct& rhs) const noexcept
     {
