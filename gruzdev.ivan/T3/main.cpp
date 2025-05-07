@@ -66,9 +66,10 @@ int main(int argc, char* argv[])
 
 std::istream& operator>>(std::istream& in, Point& point)
 {
-    char ch1, ch2, ch3;
-    in >> ch1 >> point.x >> ch2 >> point.y >> ch3;
-    if (ch1 != '(' || ch2 != ';' || ch3 != ')')
+    char symbol;
+    if (!(in >> symbol && symbol == '(' &&
+        in >> point.x >> symbol && symbol == ';'
+        && in >> point.y >> symbol && symbol == ')'))
     {
         in.setstate(std::ios::failbit);
     }
@@ -164,7 +165,7 @@ void process_commands(const std::vector<Polygon>& polygons)
             else
             {
                 size_t vertexes;
-                if (std::istringstream(subcommand) >> vertexes)
+                if (std::istringstream(subcommand) >> vertexes && vertexes >= 3 )
                 {
                     double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
                         [vertexes](double acc, const Polygon& polygon)
@@ -248,7 +249,7 @@ void process_commands(const std::vector<Polygon>& polygons)
             else
             {
                 size_t vertexes;
-                if (std::istringstream(subcommand) >> vertexes)
+                if (std::istringstream(subcommand) >> vertexes && vertexes >=3)
                 {
                     auto counter = std::count_if(polygons.begin(), polygons.end(),
                         [vertexes](const Polygon& polygon) {
