@@ -8,27 +8,27 @@
 
 struct AreaCalculator
 {
-	double operator() (const Polygon& polygon) const;
+    double operator() (const Polygon& polygon) const;
 };
 
 struct VertexCountChecker
 {
-	bool operator() (const Polygon& polygon, size_t vertexes) const;
+    bool operator() (const Polygon& polygon, size_t vertexes) const;
 };
 
 struct EvenOddChecker
 {
-	bool operator() (const Polygon& polygon, bool isEven) const;
+    bool operator() (const Polygon& polygon, bool isEven) const;
 };
 
 struct AreaComparator
 {
-	bool operator() (const Polygon& polygon, double target_area) const;
+    bool operator() (const Polygon& polygon, double target_area) const;
 };
 
 struct IntersectionChecker
 {
-	bool operator()(const Polygon& polygon, const Polygon& target) const;
+    bool operator()(const Polygon& polygon, const Polygon& target) const;
 };
 
 void process_commands(const std::vector<Polygon>& polygons);

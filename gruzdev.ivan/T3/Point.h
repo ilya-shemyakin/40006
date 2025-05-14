@@ -5,7 +5,7 @@
 
 struct Point
 {
-	int x, y;
+    int x, y;
 };
 
 std::istream& operator>>(std::istream& in, Point& point);

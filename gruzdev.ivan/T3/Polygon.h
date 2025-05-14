@@ -6,7 +6,7 @@
 
 struct Polygon
 {
-	std::vector<Point> points;
+    std::vector<Point> points;
 };
 
 std::istream& operator>>(std::istream& in, Polygon& polygon);
