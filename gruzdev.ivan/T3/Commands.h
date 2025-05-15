@@ -6,11 +6,6 @@
 #include <functional>
 #include <limits>
 
-struct AreaCalculator
-{
-    double operator() (const Polygon& polygon) const;
-};
-
 struct VertexCountChecker
 {
     bool operator() (const Polygon& polygon, size_t vertexes) const;
@@ -19,11 +14,6 @@ struct VertexCountChecker
 struct EvenOddChecker
 {
     bool operator() (const Polygon& polygon, bool isEven) const;
-};
-
-struct AreaComparator
-{
-    bool operator() (const Polygon& polygon, double target_area) const;
 };
 
 struct IntersectionChecker

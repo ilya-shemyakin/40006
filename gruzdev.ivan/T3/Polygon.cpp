@@ -27,7 +27,12 @@ std::istream& operator>>(std::istream& in, Polygon& polygon)
     }
 
 
-    if (polygon.points.size() != static_cast<size_t>(vertexes) || in.peek() != '\n')
+    if (polygon.points.size() != static_cast<size_t>(vertexes))
+    {
+        in.setstate(std::ios::failbit);
+    }
+
+    if (in.peek() != '\n' && in.peek() != EOF)
     {
         in.setstate(std::ios::failbit);
     }

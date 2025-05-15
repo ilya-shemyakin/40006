@@ -10,11 +10,6 @@
 
 using namespace std::placeholders;
 
-double AreaCalculator::operator()(const Polygon& polygon) const
-{
-    return polygon_area(polygon);
-}
-
 bool VertexCountChecker::operator()(const Polygon& polygon, size_t vertexes) const
 {
     return polygon.points.size() == vertexes;
@@ -23,11 +18,6 @@ bool VertexCountChecker::operator()(const Polygon& polygon, size_t vertexes) con
 bool EvenOddChecker::operator()(const Polygon& polygon, bool isEven) const
 {
     return (polygon.points.size() % 2 == 0) == isEven;
-}
-
-bool AreaComparator::operator()(const Polygon& polygon, double target_area) const
-{
-    return polygon_area(polygon) < target_area;
 }
 
 bool IntersectionChecker::operator()(const Polygon& polygon, const Polygon& target) const
