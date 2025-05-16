@@ -5,7 +5,7 @@
 std::istream& operator>>(std::istream& in, Polygon& polygon)
 {
     polygon.points.clear();
-    int vertexes;
+    int vertexes = 0;
     if (!(in >> vertexes) || vertexes < 3)
     {
         in.setstate(std::ios::failbit);
