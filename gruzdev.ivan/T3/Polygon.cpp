@@ -4,18 +4,21 @@
 
 std::istream& operator>>(std::istream& in, Polygon& polygon)
 {
+    polygon.points.clear();
     int vertexes;
     if (!(in >> vertexes) || vertexes < 3)
     {
         in.setstate(std::ios::failbit);
-        return in;
     }
-
-    polygon.points.clear();
-    polygon.points.reserve(vertexes);
 
     for (int i = 0; i < vertexes; i++)
     {
+        char check = in.peek();
+        if (check == '\n')
+        {
+            in.setstate(std::ios::failbit);
+            break;
+        }
         Point point;
         if (!(in >> point))
         {
@@ -32,7 +35,8 @@ std::istream& operator>>(std::istream& in, Polygon& polygon)
         in.setstate(std::ios::failbit);
     }
 
-    if (in.peek() != '\n' && in.peek() != EOF)
+    char check =  in.peek();
+    if (check != '\n' && check != EOF)
     {
         in.setstate(std::ios::failbit);
     }
