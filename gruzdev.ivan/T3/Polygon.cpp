@@ -29,12 +29,6 @@ std::istream& operator>>(std::istream& in, Polygon& polygon)
         polygon.points.push_back(point);
     }
 
-
-    if (polygon.points.size() != static_cast<size_t>(vertexes))
-    {
-        in.setstate(std::ios::failbit);
-    }
-
     char check =  in.peek();
     if (check != '\n' && check != EOF)
     {
@@ -62,3 +56,4 @@ double polygon_area(const Polygon& polygon)
         - static_cast<double>(pts.front().x) * pts.back().y;
     return std::abs(sum) / 2.0;
 }
+

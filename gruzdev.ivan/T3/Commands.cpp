@@ -33,155 +33,40 @@ void process_commands(const std::vector<Polygon>& polygons)
         if (cmd == "AREA")
         {
             std::string subcommand;
-            if (!read_subcommand(subcommand))
+            if (read_subcommand(subcommand))
             {
-                continue;
-            }
-
-            if (subcommand == "EVEN" || subcommand == "ODD")
-            {
-                bool isEven = (subcommand == "EVEN");
-                double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
-                    [isEven](double acc, const Polygon& poly)
-                    {
-                        bool condition = (poly.points.size() % 2 == 0);
-                        return acc + (condition == isEven ? polygon_area(poly) : 0.0);
-                    });
-                std::cout << std::fixed << std::setprecision(1) << sum << "\n";
-            }
-            else if (subcommand == "MEAN")
-            {
-                if (polygons.empty())
-                {
-                    invalid_command();
-                    continue;
-                }
-                double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
-                    [](double acc, const Polygon& poly)
-                    {
-                        return acc + polygon_area(poly);
-                    });
-                std::cout << std::fixed << std::setprecision(1) << sum / polygons.size() << "\n";
-            }
-            else
-            {
-                size_t vertexes;
-                if (std::istringstream(subcommand) >> vertexes && vertexes >= 3)
-                {
-                    double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
-                        [vertexes](double acc, const Polygon& poly)
-                        {
-                            return acc + (poly.points.size() == vertexes ? polygon_area(poly) : 0.0);
-                        });
-                    std::cout << std::fixed << std::setprecision(1) << sum << "\n";
-                }
-                else
-                {
-                    invalid_command();
-                }
+                area_command(polygons, subcommand);
             }
         }
         else if (cmd == "MAX" || cmd == "MIN")
         {
             std::string subcommand;
-            if (!read_subcommand(subcommand))
+            if (read_subcommand(subcommand))
             {
-                continue;
-            }
-
-            if (polygons.empty())
-            {
-                invalid_command();
-                continue;
-            }
-
-            if (subcommand == "AREA")
-            {
-                auto extremum = (cmd == "MAX") ?
-                    std::max_element(polygons.begin(), polygons.end(),
-                        [](const Polygon& poly1, const Polygon& poly2)
-                        {
-                            return polygon_area(poly1) < polygon_area(poly2);
-                        }) :
-                    std::min_element(polygons.begin(), polygons.end(),
-                        [](const Polygon& poly1, const Polygon& poly2)
-                        {
-                            return polygon_area(poly1) < polygon_area(poly2);
-                        });
-                        std::cout << std::fixed << std::setprecision(1) << polygon_area(*extremum) << "\n";
-            }
-            else if (subcommand == "VERTEXES")
-            {
-                auto extremum = (cmd == "MAX") ?
-                    std::max_element(polygons.begin(), polygons.end(),
-                        [](const Polygon& poly1, const Polygon& poly2)
-                        {
-                            return poly1.points.size() < poly2.points.size();
-                        }) :
-                    std::min_element(polygons.begin(), polygons.end(),
-                        [](const Polygon& poly1, const Polygon& poly2)
-                        {
-                            return poly1.points.size() < poly2.points.size();
-                        });
-                        std::cout << extremum->points.size() << "\n";
-            }
-            else
-            {
-                invalid_command();
+                max_min_command(polygons, cmd, subcommand);
             }
         }
         else if (cmd == "COUNT")
         {
             std::string subcommand;
-            if (!read_subcommand(subcommand))
+            if (read_subcommand(subcommand))
             {
-                continue;
-            }
-            if (subcommand == "EVEN" || subcommand == "ODD")
-            {
-                bool isEven = (subcommand == "EVEN");
-                auto count = std::count_if(polygons.begin(), polygons.end(),
-                    std::bind(EvenOddChecker(), _1, isEven));
-                std::cout << count << "\n";
-            }
-            else
-            {
-                size_t vertexes;
-                if (std::istringstream(subcommand) >> vertexes && vertexes >= 3)
-                {
-                    auto count = std::count_if(polygons.begin(), polygons.end(),
-                        std::bind(VertexCountChecker(), _1, vertexes));
-                    std::cout << count << "\n";
-                }
-                else
-                {
-                    invalid_command();
-                }
+                count_command(polygons, subcommand);
             }
         }
         else if (cmd == "LESSAREA" || cmd == "INTERSECTIONS")
         {
             Polygon target;
-            if (!read_polygon(target))
+            if (read_polygon(target))
             {
-                continue;
-            }
-
-            if (cmd == "LESSAREA")
-            {
-                double target_area = polygon_area(target);
-                auto count = std::count_if(polygons.begin(), polygons.end(),
-                    [target_area](const Polygon& poly)
-                    {
-                        return polygon_area(poly) < target_area;
-                    });
-                std::cout << count << "\n";
-            }
-            else
-            {
-                auto count = std::count_if(polygons.begin(), polygons.end(),
-                    std::bind(IntersectionChecker(), _1, std::cref(target)));
-                std::cout << count << "\n";
+                if (cmd == "LESSAREA")
+                {
+                    lessarea_command(polygons, target);
+                }
+                else
+                {
+                    intersections_command(polygons, target);
+                }
             }
         }
         else
@@ -189,6 +74,139 @@ void process_commands(const std::vector<Polygon>& polygons)
             invalid_command();
         }
     }
+}
+
+void area_command(const std::vector<Polygon>& polygons, const std::string& subcommand)
+{
+    if (subcommand == "EVEN" || subcommand == "ODD")
+    {
+        bool isEven = (subcommand == "EVEN");
+        double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
+            [isEven](double acc, const Polygon& poly)
+            {
+                bool condition = (poly.points.size() % 2 == 0);
+                return acc + (condition == isEven ? polygon_area(poly) : 0.0);
+            });
+        std::cout << std::fixed << std::setprecision(1) << sum << "\n";
+    }
+    else if (subcommand == "MEAN")
+    {
+        if (polygons.empty())
+        {
+            invalid_command();
+            return;
+        }
+        double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
+            [](double acc, const Polygon& poly)
+            {
+                return acc + polygon_area(poly);
+            });
+        std::cout << std::fixed << std::setprecision(1) << sum / polygons.size() << "\n";
+    }
+    else
+    {
+        size_t vertexes;
+        if (std::istringstream(subcommand) >> vertexes && vertexes >= 3)
+        {
+            double sum = std::accumulate(polygons.begin(), polygons.end(), 0.0,
+                [vertexes](double acc, const Polygon& poly)
+                {
+                    return acc + (poly.points.size() == vertexes ? polygon_area(poly) : 0.0);
+                });
+            std::cout << std::fixed << std::setprecision(1) << sum << "\n";
+        }
+        else
+        {
+            invalid_command();
+        }
+    }
+}
+
+void max_min_command(const std::vector<Polygon>& polygons, const std::string& cmd, const std::string& subcommand)
+{
+    if (polygons.empty())
+    {
+        invalid_command();
+        return;
+    }
+
+    if (subcommand == "AREA")
+    {
+        auto extremum = (cmd == "MAX") ?
+            std::max_element(polygons.begin(), polygons.end(),
+                [](const Polygon& poly1, const Polygon& poly2)
+                {
+                    return polygon_area(poly1) < polygon_area(poly2);
+                }) :
+            std::min_element(polygons.begin(), polygons.end(),
+                [](const Polygon& poly1, const Polygon& poly2)
+                {
+                    return polygon_area(poly1) < polygon_area(poly2);
+                });
+                std::cout << std::fixed << std::setprecision(1) << polygon_area(*extremum) << "\n";
+    }
+    else if (subcommand == "VERTEXES")
+    {
+        auto extremum = (cmd == "MAX") ?
+            std::max_element(polygons.begin(), polygons.end(),
+                [](const Polygon& poly1, const Polygon& poly2)
+                {
+                    return poly1.points.size() < poly2.points.size();
+                }) :
+            std::min_element(polygons.begin(), polygons.end(),
+                [](const Polygon& poly1, const Polygon& poly2)
+                {
+                    return poly1.points.size() < poly2.points.size();
+                });
+                std::cout << extremum->points.size() << "\n";
+    }
+    else
+    {
+        invalid_command();
+    }
+}
+
+void count_command(const std::vector<Polygon>& polygons, const std::string& subcommand)
+{
+    if (subcommand == "EVEN" || subcommand == "ODD")
+    {
+        bool isEven = (subcommand == "EVEN");
+        auto count = std::count_if(polygons.begin(), polygons.end(),
+            std::bind(EvenOddChecker(), _1, isEven));
+        std::cout << count << "\n";
+    }
+    else
+    {
+        size_t vertexes;
+        if (std::istringstream(subcommand) >> vertexes && vertexes >= 3)
+        {
+            auto count = std::count_if(polygons.begin(), polygons.end(),
+                std::bind(VertexCountChecker(), _1, vertexes));
+            std::cout << count << "\n";
+        }
+        else
+        {
+            invalid_command();
+        }
+    }
+}
+
+void lessarea_command(const std::vector<Polygon>& polygons, const Polygon& target)
+{
+    double target_area = polygon_area(target);
+    auto count = std::count_if(polygons.begin(), polygons.end(),
+        [target_area](const Polygon& poly)
+        {
+            return polygon_area(poly) < target_area;
+        });
+    std::cout << count << "\n";
+}
+
+void intersections_command(const std::vector<Polygon>& polygons, const Polygon& target)
+{
+    auto count = std::count_if(polygons.begin(), polygons.end(),
+        std::bind(IntersectionChecker(), _1, std::cref(target)));
+    std::cout << count << "\n";
 }
 
 void invalid_command()
@@ -271,45 +289,21 @@ bool do_intersect(const Polygon& poly1, const Polygon& poly2)
     const auto& pts1 = poly1.points;
     const auto& pts2 = poly2.points;
 
-    for (size_t i = 0; i < pts1.size(); ++i)
+    bool segments_cross = std::any_of(pts1.begin(), pts1.end(),
+        [&pts1, &pts2](const Point& p1) {
+            const Point& q1 = pts1[(&p1 - &pts1[0] + 1) % pts1.size()];
+            return std::any_of(pts2.begin(), pts2.end(),
+                [&p1, &q1, &pts2](const Point& p2) {
+                    const Point& q2 = pts2[(&p2 - &pts2[0] + 1) % pts2.size()];
+                    return segments_intersect(p1, q1, p2, q2);
+                });
+        });
+
+    if (segments_cross)
     {
-        const Point& p1 = pts1[i];
-        const Point& q1 = pts1[(i + 1) % pts1.size()];
-
-        for (size_t j = 0; j < pts2.size(); ++j)
-        {
-            const Point& p2 = pts2[j];
-            const Point& q2 = pts2[(j + 1) % pts2.size()];
-
-            if (segments_intersect(p1, q1, p2, q2))
-            {
-                return true;
-            }
-        }
+        return true;
     }
 
-    return point_inside_polygon(pts1[0], poly2) || point_inside_polygon(pts2[0], poly1);
+    return false;
 }
 
-bool point_inside_polygon(const Point& point, const Polygon& poly)
-{
-    const auto& pts = poly.points;
-    if (pts.size() < 3)
-    {
-        return false;
-    }
-
-    bool inside = false;
-    for (size_t i = 0, j = pts.size() - 1; i < pts.size(); j = i++)
-    {
-        const Point& p1 = pts[i];
-        const Point& p2 = pts[j];
-
-        if (((p1.y > point.y) != (p2.y > point.y)) &&
-            (point.x < (p2.x - p1.x) * (point.y - p1.y) / (p2.y - p1.y) + p1.x))
-        {
-            inside = !inside;
-        }
-    }
-    return inside;
-}
