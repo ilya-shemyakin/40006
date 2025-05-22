@@ -304,6 +304,22 @@ bool do_intersect(const Polygon& poly1, const Polygon& poly2)
         return true;
     }
 
-    return false;
+    return point_inside_polygon(pts1[0], poly2) || point_inside_polygon(pts2[0], poly1);
 }
 
+bool point_inside_polygon(const Point& point, const Polygon& poly)
+{
+    const auto& pts = poly.points;
+
+    return std::accumulate(pts.begin(), pts.end(),
+        std::make_pair(false, pts.back()),
+        [&point](auto acc, const Point& p1) {
+            bool inside = acc.first;
+            const Point& p2 = acc.second;
+
+            bool intersect = ((p1.y > point.y) != (p2.y > point.y)) &&
+                (point.x < (p2.x - p1.x) * (point.y - p1.y) / (p2.y - p1.y) + p1.x);
+
+            return std::make_pair(intersect ? !inside : inside, p1);
+        }).first;
+}
