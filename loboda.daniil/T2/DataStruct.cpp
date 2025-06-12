@@ -1,206 +1,115 @@
 ﻿#include "DataStruct.h"
 #include <iomanip>
-#include <iterator>
-#include <algorithm>
-#include <cctype>
 #include <sstream>
+#include <limits>
 
-namespace task01
-{
-    iofmtguard::iofmtguard(std::basic_ios<char>& s)
-        : s_(s)
-        , width_(s.width())
-        , fill_(s.fill())
-        , precision_(s.precision())
-        , fmt_(s.flags())
-    {
-    }
-
-    iofmtguard::~iofmtguard()
-    {
-        s_.width(width_);
-        s_.fill(fill_);
-        s_.precision(precision_);
-        s_.flags(fmt_);
-    }
-
-    struct DelimIO { char exp; };
-    struct ULLLitIO { unsigned long long& ref; };
-    struct ComplexIO { std::complex<double>& r; };
-    struct StringIO { std::string& ref; };
-    struct FieldLabelIO { std::string  exp; };
-
-    std::istream& operator>>(std::istream& in, DelimIO&& d)
-    {
-        std::istream::sentry sentry(in);
-        if (!sentry) return in;
-        char c = '\0';
-        in >> c;
-        if (in && c != d.exp) in.setstate(std::ios::failbit);
+std::istream& operator>>(std::istream& in, DelimiterIO&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry)
         return in;
-    }
+    char c = 0;
+    in >> c;
+    if (in && c != dest.exp)
+        in.setstate(std::ios::failbit);
+    return in;
+}
 
-    std::istream& operator>>(std::istream& in, ULLLitIO&& d)
-    {
-        std::istream::sentry sentry(in);
-        if (!sentry) return in;
+std::istream& operator>>(std::istream& in, UnsignedLongLongIO&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry)
+        return in;
 
-        unsigned long long value = 0ull;
-        if (!(in >> value)) return in;
+    unsigned long long value;
+    std::string suffix;
+    in >> value;
+    if (!in)
+        return in;
+    char c1 = 0, c2 = 0, c3 = 0;
+    in.get(c1).get(c2).get(c3);
+    if (!((c1 == 'u' || c1 == 'U') && (c2 == 'l' || c2 == 'L') && (c3 == 'l' || c3 == 'L')))
+        in.setstate(std::ios::failbit);
+    else
+        dest.ref = value;
+    return in;
+}
 
-        char u = '\0', l1 = '\0', l2 = '\0';
-        in >> u >> l1 >> l2;
-        if (!in
-            || std::tolower(u) != 'u'
-            || std::tolower(l1) != 'l'
-            || std::tolower(l2) != 'l')
-        {
-            in.setstate(std::ios::failbit);
-            return in;
+std::istream& operator>>(std::istream& in, ComplexIO&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry)
+        return in;
+
+    double real = 0, imag = 0;
+    in >> DelimiterIO{ '#' } >> DelimiterIO{ 'c' } >> DelimiterIO{ '(' } >> real >> imag >> DelimiterIO{ ')' };
+    dest.ref = std::complex<double>(real, imag);
+    return in;
+}
+
+std::istream& operator>>(std::istream& in, StringIO&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry)
+        return in;
+    return std::getline(in >> DelimiterIO{ '"' }, dest.ref, '"');
+}
+
+std::istream& operator>>(std::istream& in, DataStruct& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry)
+        return in;
+
+    DataStruct input;
+    std::string field;
+    bool hasKey1 = false, hasKey2 = false, hasKey3 = false;
+
+    in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' };
+    while (in >> field) {
+        if (field == "key1") {
+            in >> UnsignedLongLongIO{ input.key1 } >> DelimiterIO{ ':' };
+            if (in)
+                hasKey1 = true;
         }
-        d.ref = value;
-        return in;
-    }
-
-    std::istream& operator>>(std::istream& in, ComplexIO&& d)
-    {
-        std::istream::sentry sentry(in);
-        if (!sentry) return in;
-
-        char hash = '\0', cchar = '\0', lpar = '\0';
-        in >> hash >> cchar >> lpar;
-        if (!in || hash != '#' || std::tolower(cchar) != 'c' || lpar != '(')
-        {
-            in.setstate(std::ios::failbit);
-            return in;
+        else if (field == "key2") {
+            in >> ComplexIO{ input.key2 } >> DelimiterIO{ ':' };
+            if (in)
+                hasKey2 = true;
         }
-
-        double re = 0.0, im = 0.0;
-        if (!(in >> re >> im))
-        {
-            in.setstate(std::ios::failbit);
-            return in;
+        else if (field == "key3") {
+            in >> StringIO{ input.key3 } >> DelimiterIO{ ':' };
+            if (in)
+                hasKey3 = true;
         }
-
-        char rpar = '\0';
-        in >> rpar;
-        if (!in || rpar != ')') in.setstate(std::ios::failbit);
-
-        d.r = { re, im };
-        return in;
-    }
-
-    std::istream& operator>>(std::istream& in, StringIO&& d)
-    {
-        std::istream::sentry sentry(in);
-        if (!sentry) return in;
-
-        char quote = '\0';
-        in >> quote;
-        if (!in || quote != '"')
-        {
-            in.setstate(std::ios::failbit);
-            return in;
-        }
-        std::getline(in, d.ref, '"');
-        return in;
-    }
-
-    std::istream& operator>>(std::istream& in, FieldLabelIO&& d)
-    {
-        std::istream::sentry sentry(in);
-        if (!sentry) return in;
-
-        std::string tmp;
-        if (!(in >> tmp)) return in;
-        if (tmp != d.exp) in.setstate(std::ios::failbit);
-        return in;
-    }
-
-    std::istream& operator>>(std::istream& in, DataStruct& dst)
-    {
-        std::istream::sentry sentry(in);
-        if (!sentry) return in;
-
-        DataStruct tmp;
-        bool gotK1 = false, gotK2 = false, gotK3 = false;
-
-        using sep = DelimIO;
-        using k1io = ULLLitIO;
-        using k2io = ComplexIO;
-        using strio = StringIO;
-
-        if (!(in >> sep{ '(' } >> sep{ ':' })) return in;
-
-        while (in)
-        {
-            std::string field;
-            if (!(in >> field)) return in;
-
-            if (field == "key1")
-            {
-                if (gotK1 || !(in >> sep{ ' ' } >> k1io{ tmp.key1 })) break;
-                gotK1 = true;
-            }
-            else if (field == "key2")
-            {
-                if (gotK2 || !(in >> sep{ ' ' } >> k2io{ tmp.key2 })) break;
-                gotK2 = true;
-            }
-            else if (field == "key3")
-            {
-                if (gotK3 || !(in >> sep{ ' ' } >> strio{ tmp.key3 })) break;
-                gotK3 = true;
-            }
-            else
-            {
+        else if (field == ")") {
+            if (!(hasKey1 && hasKey2 && hasKey3))
                 in.setstate(std::ios::failbit);
-                break;
-            }
-
-            char tail = '\0';
-            in >> tail;
-            if (!in) break;
-            if (tail == ':')        continue;
-            else if (tail == ')')
-            {
-                if (gotK1 && gotK2 && gotK3) dst = tmp;
-                else                         in.setstate(std::ios::failbit);
-                return in;
-            }
-            else
-            {
-                in.setstate(std::ios::failbit);
-                break;
-            }
+            break;
         }
-
-        return in;
+        else {
+            in.setstate(std::ios::failbit);
+            break;
+        }
     }
+    if (in)
+        dest = input;
+    return in;
+}
 
-    std::ostream& operator<<(std::ostream& out, const DataStruct& s)
-    {
-        std::ostream::sentry sentry(out);
-        if (!sentry) return out;
-
-        iofmtguard g(out);
-        out << "(:key1 " << s.key1 << "ull:";
-        out << "key2 #c(" << std::fixed << std::setprecision(1)
-            << s.key2.real() << ' ' << s.key2.imag() << "):";
-        out << "key3 \"" << s.key3 << "\":)";
+std::ostream& operator<<(std::ostream& out, const DataStruct& src) {
+    std::ostream::sentry sentry(out);
+    if (!sentry)
         return out;
-    }
+    iofmtguard guard(out);
 
-    // == Компаратор ==
-    bool Comparator::operator()(const DataStruct& lhs,
-        const DataStruct& rhs) const noexcept
-    {
-        if (lhs.key1 != rhs.key1)
-            return lhs.key1 < rhs.key1;
-        double a = std::abs(lhs.key2), b = std::abs(rhs.key2);
-        if (a != b)
-            return a < b;
-        return lhs.key3.size() < rhs.key3.size();
-    }
+    out << "(:key1 " << src.key1 << "ull:key2 #c(" << std::fixed << std::setprecision(1)
+        << src.key2.real() << " " << src.key2.imag() << "):key3 \"" << src.key3 << "\":)";
+    return out;
+}
 
+iofmtguard::iofmtguard(std::basic_ios<char>& s)
+    : s_(s), width_(s.width()), fill_(s.fill()), precision_(s.precision()), fmt_(s.flags()) {
+}
+
+iofmtguard::~iofmtguard() {
+    s_.width(width_);
+    s_.fill(fill_);
+    s_.precision(precision_);
+    s_.flags(fmt_);
 }
