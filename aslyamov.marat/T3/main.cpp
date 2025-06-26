@@ -36,7 +36,13 @@ int main(int argc, char* argv[]) {
         std::cin >> arg;
         if (cmd == "AREA") {
             if (arg == "EVEN" || arg == "ODD" || arg == "MEAN" || (is_num(arg) && std::stoi(arg) >= 3)) {
-                std::cout << area(arg, data) << '\n';
+                double out = area(arg, data);
+                if (out > 0) {
+                    std::cout << area(arg, data) << '\n';
+                }
+                else {
+                    invalid_command();
+                }
             }
             else {
                 invalid_command();
@@ -70,14 +76,14 @@ int main(int argc, char* argv[]) {
             if (iss >> figure) {
                 std::string extra;
                 if (iss >> extra) {
-                    std::cout << "<INVALID_COMMAND>\n";
+                    std::cout << "\t<INVALID_COMMAND>\n";
                 }
                 else {
                     std::cout << less_area(figure, data) << '\n';
                 }
             }
             else {
-                std::cout << "<INVALID_COMMAND>\n";
+                std::cout << "\t<INVALID_COMMAND>\n";
             }
         }
         else if (cmd == "SAME") {
@@ -89,14 +95,14 @@ int main(int argc, char* argv[]) {
             if (iss >> figure) {
                 std::string extra;
                 if (iss >> extra) {
-                    std::cout << "<INVALID_COMMAND>\n";
+                    std::cout << "\t<INVALID COMMAND>\n";
                 }
                 else {
                     std::cout << same(figure, data) << '\n';
                 }
             }
             else {
-                invalid_command();
+                std::cout << "\t<INVALID_COMMAND>\n";
             }
         }
         else {

@@ -51,7 +51,7 @@ bool operator==(const Point& a, const Point& b) {
 }
 
 void invalid_command() {
-    std::cout << "<INVALID_COMMAND>\n";
+    std::cout << "\t<INVALID COMMAND>\n";
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
@@ -69,7 +69,10 @@ double area(std::string& arg, const std::vector<Polygon>& data) {
             });
         return out;
     }
-    else if (arg == "MEAN" && data.size() != 0) {
+    else if (arg == "MEAN") {
+        if (data.size() == 0) {
+            return -1;
+        }
         out = std::accumulate(data.begin(), data.end(), 0.0,
             [](double sum, const Polygon& fig) {
                 return sum + calculate_area(fig.points);
