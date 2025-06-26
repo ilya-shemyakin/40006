@@ -143,7 +143,6 @@ int main(int argc, char* argv[])
             std::string token;
             if (std::cin >> token)
             {
-
                 if (!isNumber(token) || std::stoi(token) < 3)
                 {
                     invalidCommand();
@@ -161,22 +160,15 @@ int main(int argc, char* argv[])
                     {
                         valid = false;
                     }
-                    else
-                    {
-                        poly.points.push_back(p);
-                    }
+                    poly.points.push_back(p);
                 }
 
                 if (valid)
                 {
-                    for (size_t i = 1; i < poly.points.size(); ++i)
+                    char nextChar = std::cin.peek();
+                    if (nextChar != '\n' && nextChar != EOF)
                     {
-                        if (poly.points[i].x == poly.points[i - 1].x &&
-                            poly.points[i].y == poly.points[i - 1].y)
-                        {
-                            valid = false;
-                            break;
-                        }
+                        valid = false;
                     }
                 }
 
