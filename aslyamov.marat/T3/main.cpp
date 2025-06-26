@@ -76,14 +76,14 @@ int main(int argc, char* argv[]) {
             if (iss >> figure) {
                 std::string extra;
                 if (iss >> extra) {
-                    std::cout << "<INVALID_COMMAND>\n";
+                    std::cout << "<INVALID COMMAND>\n";
                 }
                 else {
                     std::cout << less_area(figure, data) << '\n';
                 }
             }
             else {
-                std::cout << "<INVALID_COMMAND>\n";
+                std::cout << "<INVALID COMMAND>\n";
             }
         }
         else if (cmd == "SAME") {
@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
                 }
             }
             else {
-                std::cout << "<INVALID_COMMAND>\n";
+                std::cout << "<INVALID COMMAND>\n";
             }
         }
         else {
