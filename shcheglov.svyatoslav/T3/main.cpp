@@ -143,6 +143,7 @@ int main(int argc, char* argv[])
             std::string token;
             if (std::cin >> token)
             {
+
                 if (!isNumber(token) || std::stoi(token) < 3)
                 {
                     invalidCommand();
@@ -150,21 +151,36 @@ int main(int argc, char* argv[])
                 }
 
                 int numVertices = std::stoi(token);
-                poly.points.resize(numVertices);
                 bool valid = true;
+                poly.points.clear();
 
-                for (int i = 0; i < numVertices; ++i)
+                for (int i = 0; i < numVertices && valid; ++i)
                 {
                     Point p;
                     if (!(std::cin >> p))
                     {
                         valid = false;
-                        break;
                     }
-                    poly.points[i] = p;
+                    else
+                    {
+                        poly.points.push_back(p);
+                    }
                 }
 
                 if (valid)
+                {
+                    for (size_t i = 1; i < poly.points.size(); ++i)
+                    {
+                        if (poly.points[i].x == poly.points[i - 1].x &&
+                            poly.points[i].y == poly.points[i - 1].y)
+                        {
+                            valid = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (valid && poly.points.size() == static_cast<size_t>(numVertices))
                 {
                     std::cout << (inFrame(poly, data) ? "<TRUE>" : "<FALSE>") << '\n';
                 }

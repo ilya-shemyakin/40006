@@ -200,19 +200,16 @@ int rightShapes(std::vector<Polygon>& data)
 
 bool inFrame(Polygon& poly, std::vector<Polygon>& polygons)
 {
-    if (poly.points.size() < 3)
+    if (polygons.empty() || poly.points.empty())
     {
-        invalidCommand();
+        return false;
     }
 
-    if (polygons.empty())
-    {
-        invalidCommand();
-    }
     int minX = polygons[0].points[0].x;
     int maxX = polygons[0].points[0].x;
     int minY = polygons[0].points[0].y;
     int maxY = polygons[0].points[0].y;
+
     for (const auto& p : polygons)
     {
         for (const auto& point : p.points)
@@ -223,6 +220,7 @@ bool inFrame(Polygon& poly, std::vector<Polygon>& polygons)
             maxY = std::max(maxY, point.y);
         }
     }
+
     for (const auto& point : poly.points)
     {
         if (point.x < minX || point.x > maxX || point.y < minY || point.y > maxY)
@@ -230,5 +228,6 @@ bool inFrame(Polygon& poly, std::vector<Polygon>& polygons)
             return false;
         }
     }
+
     return true;
 }
