@@ -3,17 +3,17 @@
 #include "Polygon.h"
 #include "Functions.h"
 
-struct VertexCountComparator 
+struct VertexCountComparator
 {
-    bool operator()(const Polygon& a, const Polygon& b) const 
+    bool operator()(const Polygon& a, const Polygon& b) const
     {
         return a.points.size() < b.points.size();
     }
 };
 
-struct AreaComparator 
+struct AreaComparator
 {
-    bool operator()(Polygon& a, Polygon& b) const 
+    bool operator()(Polygon& a, Polygon& b) const
     {
         return calculateArea(a.points) < calculateArea(b.points);
     }

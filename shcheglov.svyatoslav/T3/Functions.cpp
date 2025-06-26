@@ -122,7 +122,7 @@ double areaNum(int arg, std::vector<Polygon>& data)
         0.0,
         [arg](double sum, Polygon& figure)
         {
-            if (figure.points.size() == static_cast<size_t>(arg)) 
+            if (figure.points.size() == static_cast<size_t>(arg))
             {
                 return sum + calculateArea(figure.points);
             }
@@ -132,6 +132,7 @@ double areaNum(int arg, std::vector<Polygon>& data)
 
     return output;
 }
+
 double maxMinArea(std::string& command, std::vector<Polygon>& data)
 {
     auto output = (command == "MAX")
