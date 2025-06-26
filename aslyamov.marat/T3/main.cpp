@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
         if (cmd == "AREA") {
             if (arg == "EVEN" || arg == "ODD" || arg == "MEAN" || (is_num(arg) && std::stoi(arg) >= 3)) {
                 double out = area(arg, data);
-                if (out > 0) {
+                if (out >= 0) {
                     std::cout << area(arg, data) << '\n';
                 }
                 else {
