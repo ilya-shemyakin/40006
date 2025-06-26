@@ -202,12 +202,12 @@ bool inFrame(Polygon& poly, std::vector<Polygon>& polygons)
 {
     if (poly.points.size() < 3)
     {
-        return false;
+        invalidCommand();
     }
 
     if (polygons.empty())
     {
-        return false;
+        invalidCommand();
     }
     int minX = polygons[0].points[0].x;
     int maxX = polygons[0].points[0].x;
