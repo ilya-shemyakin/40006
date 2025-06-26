@@ -92,7 +92,7 @@ double area(std::string& arg, const std::vector<Polygon>& data) {
 double calculate_area(const std::vector<Point>& points) {
     double result = 0;
     size_t n = points.size();
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         result += (points[i].x * points[(i + 1) % n].y - points[i].y * points[(i + 1) % n].x);
     }
     return std::abs(result) / 2;
@@ -103,7 +103,7 @@ bool is_num(std::string& str) {
         std::stoi(str);
         return 1;
     }
-    catch (std::exception) {
+    catch (...) {
         return 0;
     }
 }
@@ -169,13 +169,3 @@ size_t same(const Polygon& figure, const std::vector<Polygon>& data) {
             return normalize_polygon(figure).points == target_figure.points;
         });
 }
-
-void print_data(const std::vector<Polygon>& data) {
-    for (int i = 0; i < data.size(); i++) {
-        for (int j = 0; j < data[i].points.size(); j++) {
-            std::cout << "(" << data[i].points[j].x << ' ' << data[i].points[j].y << ") ";
-        }
-        std::cout << '\n';
-    }
-}
-

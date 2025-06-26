@@ -3,7 +3,13 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
+#include <limits>
+#include <numeric>
+#include <iterator>
+#include <sstream>
 #include "Func.h"
+#include "Functors.h"
+#include "Geom.h"
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
