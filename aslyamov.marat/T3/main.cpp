@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
             if (arg == "EVEN" || arg == "ODD" || arg == "MEAN" || (is_num(arg) && std::stoi(arg) >= 3)) {
                 double out = area(arg, data);
                 if (out > 0) {
-                    std::cout << area(arg, data) << '\n';
+                    std::cout << '\t' << area(arg, data) << '\n';
                 }
                 else {
                     invalid_command();
@@ -50,10 +50,10 @@ int main(int argc, char* argv[]) {
         }
         else if ((cmd == "MAX" || cmd == "MIN") && data.size() != 0) {
             if (arg == "AREA") {
-                std::cout << max_min_area(cmd, data) << '\n';
+                std::cout << '\t' << max_min_area(cmd, data) << '\n';
             }
             else if (arg == "VERTEXES") {
-                std::cout << max_min_verts(cmd, data) << '\n';
+                std::cout << '\t' << max_min_verts(cmd, data) << '\n';
             }
             else {
                 invalid_command();
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
         }
         else if (cmd == "COUNT") {
             if (arg == "EVEN" || arg == "ODD" || (is_num(arg) && std::stoi(arg) >= 3)) {
-                std::cout << count(arg, data) << '\n';
+                std::cout << '\t' << count(arg, data) << '\n';
             }
             else {
                 invalid_command();
@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
                     std::cout << "\t<INVALID_COMMAND>\n";
                 }
                 else {
-                    std::cout << less_area(figure, data) << '\n';
+                    std::cout << '\t' << less_area(figure, data) << '\n';
                 }
             }
             else {
@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
                     std::cout << "\t<INVALID COMMAND>\n";
                 }
                 else {
-                    std::cout << same(figure, data) << '\n';
+                    std::cout << '\t' << same(figure, data) << '\n';
                 }
             }
             else {
