@@ -51,7 +51,7 @@ bool operator==(const Point& a, const Point& b) {
 }
 
 void invalid_command() {
-    std::cout << "INVALID_COMMAND\n";
+    std::cout << "<INVALID_COMMAND>\n";
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }

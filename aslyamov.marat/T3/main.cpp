@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
             }
         }
         else if (cmd == "COUNT") {
-            if (arg == "EVEN" || arg == "ODD" || is_num(arg)) {
+            if (arg == "EVEN" || arg == "ODD" || (is_num(arg) && std::stoi(arg) >= 3)) {
                 std::cout << count(arg, data) << '\n';
             }
             else {
@@ -63,21 +63,37 @@ int main(int argc, char* argv[]) {
         }
         else if (cmd == "LESSAREA") {
             std::cin.unget();
+            std::string line;
+            std::getline(std::cin >> std::ws, line);
+            std::istringstream iss(line);
             Polygon figure;
-            std::cin >> figure;
-            if (!std::cin.fail()) {
-                std::cout << less_area(figure, data) << '\n';
+            if (iss >> figure) {
+                std::string extra;
+                if (iss >> extra) {
+                    std::cout << "<INVALID_COMMAND>\n";
+                }
+                else {
+                    std::cout << less_area(figure, data) << '\n';
+                }
             }
             else {
-                invalid_command();
+                std::cout << "<INVALID_COMMAND>\n";
             }
         }
         else if (cmd == "SAME") {
             std::cin.unget();
+            std::string line;
+            std::getline(std::cin >> std::ws, line);
+            std::istringstream iss(line);
             Polygon figure;
-            std::cin >> figure;
-            if (!std::cin.fail()) {
-                std::cout << same(figure, data) << '\n';
+            if (iss >> figure) {
+                std::string extra;
+                if (iss >> extra) {
+                    std::cout << "<INVALID_COMMAND>\n";
+                }
+                else {
+                    std::cout << same(figure, data) << '\n';
+                }
             }
             else {
                 invalid_command();

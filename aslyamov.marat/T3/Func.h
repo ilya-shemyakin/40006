@@ -16,6 +16,5 @@ size_t count(std::string& arg, const std::vector<Polygon>& data);
 size_t less_area(const Polygon& figure, const std::vector<Polygon>& data);
 Polygon normalize_polygon(const Polygon& plgn);
 size_t same(const Polygon& figure, const std::vector<Polygon>& data);
-void print_data(const std::vector<Polygon>& data);
 
 #endif
