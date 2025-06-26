@@ -38,7 +38,7 @@ std::istream& operator>>(std::istream& in, Point& p) {
     }
     char c;
     if (in >> c && c == '(' && in >> p.x &&
-        in >> c && c == ';' && in >> p.y && 
+        in >> c && c == ';' && in >> p.y &&
         in >> c && c == ')') {
         return in;
     }
@@ -178,3 +178,4 @@ void print_data(const std::vector<Polygon>& data) {
         std::cout << '\n';
     }
 }
+
