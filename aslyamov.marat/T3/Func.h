@@ -15,6 +15,6 @@ size_t max_min_verts(std::string& arg, const std::vector<Polygon>& data);
 size_t count(std::string& arg, const std::vector<Polygon>& data);
 size_t less_area(const Polygon& figure, const std::vector<Polygon>& data);
 Polygon normalize_polygon(const Polygon& plgn);
-size_t same(const Polygon& figure, const std::vector<Polygon>& data);
+size_t same(const Polygon& plgn, const std::vector<Polygon>& data);
 
 #endif

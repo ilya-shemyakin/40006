@@ -112,12 +112,23 @@ bool is_num(std::string& str) {
 }
 
 double max_min_area(std::string& arg, const std::vector<Polygon>& data) {
+    auto compare_areas = std::bind(
+        std::less<double>(),
+        std::bind(calculate_area, std::bind(
+            &Polygon::points,
+            std::placeholders::_1)
+        ),
+        std::bind(calculate_area, std::bind(
+            &Polygon::points,
+            std::placeholders::_2)
+        )
+    );
     if (arg == "MAX") {
-        auto ma = std::max_element(data.begin(), data.end(), AreaComp());
+        auto ma = std::max_element(data.begin(), data.end(), compare_areas);
         return calculate_area(ma->points);
     }
     else {
-        auto ma = std::min_element(data.begin(), data.end(), AreaComp());
+        auto ma = std::min_element(data.begin(), data.end(), compare_areas);
         return calculate_area(ma->points);
     }
 }
@@ -154,17 +165,19 @@ size_t less_area(const Polygon& figure, const std::vector<Polygon>& data) {
 Polygon normalize_polygon(const Polygon& plgn) {
     Polygon result;
     Point base = plgn.points[0];
-    for (const Point& p : plgn.points) {
-        result.points.push_back({p.x - base.x, p.y - base.y});
-    }
+    result.points.resize(plgn.points.size());
+    std::transform(plgn.points.begin(), plgn.points.end(), result.points.begin(),
+        [&base](const Point& p) {
+            return Point{ p.x - base.x, p.y - base.y };
+        });
     std::sort(result.points.begin(), result.points.end(), [](const Point& a, const Point& b) {
         return a.x == b.x ? a.y < b.y : a.x < b.x;
-        });
+    });
     return result;
 }
 
-size_t same(const Polygon& figure, const std::vector<Polygon>& data) {
-    Polygon target_figure = normalize_polygon(figure);
+size_t same(const Polygon& plgn, const std::vector<Polygon>& data) {
+    Polygon target_figure = normalize_polygon(plgn);
     return std::count_if(data.begin(), data.end(), [&](const Polygon& figure) {
             if (figure.points.size() != target_figure.points.size()) {
                 return false;
