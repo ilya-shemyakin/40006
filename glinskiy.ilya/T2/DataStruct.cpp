@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-std::istream &operator>>(std::istream &istream, DelimiterIO &&dest) {
+std::istream &operator>>(std::istream &istream, CharIO &&dest) {
   std::istream::sentry sentry(istream);
   if (!sentry)
     return istream;
@@ -27,7 +27,7 @@ std::istream &operator>>(std::istream &istream, UnsignedLongLongIO &&dest) {
   if (!sentry)
     return istream;
 
-  istream >> DelimiterIO{'0'} >> DelimiterIO{'x'} >> std::hex >> dest.ref;
+  istream >> CharIO{'0'} >> CharIO{'x'} >> std::hex >> dest.ref;
 
   return istream;
 }
@@ -39,8 +39,8 @@ std::istream &operator>>(std::istream &istream, ComplexIO &&dest) {
 
   double real, imag;
 
-  istream >> DelimiterIO{'#'} >> DelimiterIO{'c'} >> DelimiterIO{'('} >> real >>
-      imag >> DelimiterIO{')'};
+  istream >> CharIO{'#'} >> CharIO{'c'} >> CharIO{'('} >> real >> imag >>
+      CharIO{')'};
 
   dest.ref = std::complex<double>(real, imag);
 
@@ -52,7 +52,7 @@ std::istream &operator>>(std::istream &istream, StringIO &&dest) {
   if (!sentry)
     return istream;
 
-  return std::getline(istream >> DelimiterIO{'"'}, dest.ref, '"');
+  return std::getline(istream >> CharIO{'"'}, dest.ref, '"');
 }
 
 std::istream &operator>>(std::istream &istream, DataStruct &dest) {
@@ -65,14 +65,14 @@ std::istream &operator>>(std::istream &istream, DataStruct &dest) {
   DataStruct input;
   std::string str;
 
-  istream >> DelimiterIO{'('} >> DelimiterIO{':'};
+  istream >> CharIO{'('} >> CharIO{':'};
   while (istream >> str) {
     if (str == "key1")
-      istream >> UnsignedLongLongIO{input.key1} >> DelimiterIO{':'};
+      istream >> UnsignedLongLongIO{input.key1} >> CharIO{':'};
     else if (str == "key2")
-      istream >> ComplexIO{input.key2} >> DelimiterIO{':'};
+      istream >> ComplexIO{input.key2} >> CharIO{':'};
     else if (str == "key3")
-      istream >> StringIO{input.key3} >> DelimiterIO{':'};
+      istream >> StringIO{input.key3} >> CharIO{':'};
     else if (str == ")")
       break;
     else {

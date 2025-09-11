@@ -10,7 +10,7 @@ struct DataStruct {
   std::string key3;
 };
 
-struct DelimiterIO {
+struct CharIO {
   char exp;
 };
 
@@ -39,7 +39,7 @@ private:
   std::basic_ios<char>::fmtflags fmt_;
 };
 
-std::istream &operator>>(std::istream &istream, DelimiterIO &&dest);
+std::istream &operator>>(std::istream &istream, CharIO &&dest);
 std::istream &operator>>(std::istream &istream, UnsignedLongLongIO &&dest);
 std::istream &operator>>(std::istream &istream, ComplexIO &&dest);
 std::istream &operator>>(std::istream &istream, StringIO &&dest);
