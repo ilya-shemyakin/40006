@@ -17,4 +17,5 @@ std::istream& operator>>(std::istream& in, DataStruct& data);
 std::ostream& operator<<(std::ostream& out, const DataStruct& data);
 void processData();
 
-#endif 
+
+#endif
