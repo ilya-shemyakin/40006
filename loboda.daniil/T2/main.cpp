@@ -2,7 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <iomanip>
-#include <clocale>     // для setlocale
+#include <clocale>
 #include "DataStruct.h"
 
 using namespace std;

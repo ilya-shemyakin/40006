@@ -20,8 +20,6 @@ bool operator>(const DataStruct& a, const DataStruct& b);
 bool operator<=(const DataStruct& a, const DataStruct& b);
 bool operator<(const DataStruct& a, const DataStruct& b);
 bool operator>=(const DataStruct& a, const DataStruct& b);
-
-
 std::istream& operator>>(std::istream& in, DataStruct& v);
 std::ostream& operator<<(std::ostream& out, const DataStruct& v);
 #endif

@@ -5,7 +5,7 @@
 #include <complex>
 #include <cctype>
 #include <cmath>
-#include <sstream>   // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ std::istringstream
+#include <sstream>   // нужно для std::istringstream
 
 using namespace std;
 
@@ -27,10 +27,10 @@ bool operator>(const DataStruct& a, const DataStruct& b) {
         }
         else if (abs(a.key2) == abs(b.key2))
             return (a.key3.length() > b.key3.length());
-
+            
         return false;
     }
-
+    
   return false;
 }
 
@@ -50,10 +50,10 @@ bool operator<(const DataStruct& a, const DataStruct& b) {
         {
             return(a.key3.length() < b.key3.length());
 
-        return false;
+        return false;  
         }
     }
-
+    
   return false;
 }
 
