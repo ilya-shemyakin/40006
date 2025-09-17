@@ -12,53 +12,49 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
 
     data = DataStruct{};
     bool has_key1 = false, has_key2 = false, has_key3 = false;
-
     size_t pos = 0;
+
     while (pos < line.size()) {
-        size_t field_start = line.find(':', pos);
-        if (field_start == std::string::npos) break;
+        if (line[pos] != ':') {
+            pos++;
+            continue;
+        }
 
-        size_t space_pos = line.find(' ', field_start);
-        if (space_pos == std::string::npos) break;
+        size_t field_end = line.find(' ', pos + 1);
+        if (field_end == std::string::npos) break;
 
-        std::string field_name = line.substr(field_start + 1, space_pos - field_start - 1);
+        std::string field_name = line.substr(pos + 1, field_end - pos - 1);
 
         if (field_name == "key1" && !has_key1) {
-            size_t value_end = line.find(':', space_pos + 1);
+            size_t value_end = line.find(':', field_end + 1);
             if (value_end == std::string::npos) break;
 
-            std::string value_str = line.substr(space_pos + 1, value_end - space_pos - 1);
-
-            if (value_str.size() >= 2 &&
-                (value_str.substr(value_str.size() - 2) == "ll" ||
-                    value_str.substr(value_str.size() - 2) == "LL")) {
-
+            std::string value_str = line.substr(field_end + 1, value_end - field_end - 1);
+            if (value_str.size() >= 2 && (value_str.substr(value_str.size() - 2) == "ll" || value_str.substr(value_str.size() - 2) == "LL")) {
                 value_str = value_str.substr(0, value_str.size() - 2);
                 try {
                     data.key1 = std::stoll(value_str);
                     has_key1 = true;
                 }
-                catch (...) {
-                }
+                catch (...) {}
             }
             pos = value_end;
         }
         else if (field_name == "key2" && !has_key2) {
-            if (line.substr(space_pos + 1, 3) != "#c(") {
-                pos = space_pos + 1;
+            if (line.compare(field_end + 1, 3, "#c(") != 0) {
+                pos = field_end + 1;
                 continue;
             }
 
-            size_t paren_end = line.find(')', space_pos + 4);
+            size_t paren_end = line.find(')', field_end + 4);
             if (paren_end == std::string::npos) break;
 
-            std::string complex_str = line.substr(space_pos + 4, paren_end - (space_pos + 4));
+            std::string complex_str = line.substr(field_end + 4, paren_end - field_end - 4);
+            size_t space_pos = complex_str.find(' ');
+            if (space_pos == std::string::npos) break;
 
-            size_t space_pos_in_complex = complex_str.find(' ');
-            if (space_pos_in_complex == std::string::npos) break;
-
-            std::string real_str = complex_str.substr(0, space_pos_in_complex);
-            std::string imag_str = complex_str.substr(space_pos_in_complex + 1);
+            std::string real_str = complex_str.substr(0, space_pos);
+            std::string imag_str = complex_str.substr(space_pos + 1);
 
             try {
                 double real = std::stod(real_str);
@@ -66,23 +62,22 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
                 data.key2 = std::complex<double>(real, imag);
                 has_key2 = true;
             }
-            catch (...) {
-            }
+            catch (...) {}
             pos = paren_end + 1;
         }
         else if (field_name == "key3" && !has_key3) {
-            if (line[space_pos + 1] != '"') {
-                pos = space_pos + 1;
+            if (line[field_end + 1] != '"') {
+                pos = field_end + 1;
                 continue;
             }
 
-            size_t quote_end = space_pos + 2;
+            size_t quote_end = field_end + 2;
             while (quote_end < line.size() && line[quote_end] != '"') {
                 quote_end++;
             }
 
             if (quote_end < line.size()) {
-                data.key3 = line.substr(space_pos + 2, quote_end - (space_pos + 2));
+                data.key3 = line.substr(field_end + 2, quote_end - field_end - 2);
                 has_key3 = true;
                 pos = quote_end + 1;
             }
@@ -91,9 +86,7 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
             }
         }
         else {
-            size_t next_colon = line.find(':', space_pos + 1);
-            if (next_colon == std::string::npos) break;
-            pos = next_colon;
+            pos = field_end + 1;
         }
     }
 
