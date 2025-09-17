@@ -1,24 +1,49 @@
-#pragma once
-#include <string>
-#include <complex>
-#include <iosfwd>
+#ifndef DATASTRUCT_H
+#define DATASTRUCT_H
 
-using Key1 = unsigned long long;
-using Key2 = std::complex<double>;
+#include <complex>
+#include <iostream>
+#include <string>
 
 struct DataStruct {
-    Key1        key1;
-    Key2        key2;
+    unsigned long long key1;
+    std::complex<double> key2;
     std::string key3;
-    std::string keyT;
 };
 
-bool operator==(DataStruct& a, DataStruct& b);
-bool operator!=(DataStruct& a, DataStruct& b);
-bool operator>(DataStruct& a, DataStruct& b);
-bool operator<=(DataStruct& a, DataStruct& b);
-bool operator<(DataStruct& a, DataStruct& b);
-bool operator>=(DataStruct& a, DataStruct& b);
+struct DelimiterIO {
+    char exp;
+};
 
-std::istream& operator>>(std::istream& in, DataStruct& v);
-std::ostream& operator<<(std::ostream& out, const DataStruct& v);
+struct UnsignedLongLongIO {
+    unsigned long long& ref;
+};
+
+struct ComplexIO {
+    std::complex<double>& ref;
+};
+
+struct StringIO {
+    std::string& ref;
+};
+
+class iofmtguard {
+public:
+    iofmtguard(std::basic_ios<char>& s);
+    ~iofmtguard();
+private:
+    std::basic_ios<char>& s_;
+    std::streamsize width_;
+    char fill_;
+    std::streamsize precision_;
+    std::basic_ios<char>::fmtflags fmt_;
+};
+
+std::istream& operator>>(std::istream& in, DelimiterIO&& dest);
+std::istream& operator>>(std::istream& in, UnsignedLongLongIO&& dest);
+std::istream& operator>>(std::istream& in, ComplexIO&& dest);
+std::istream& operator>>(std::istream& in, StringIO&& dest);
+std::istream& operator>>(std::istream& in, DataStruct& dest);
+std::ostream& operator<<(std::ostream& out, const DataStruct& src);
+
+#endif
