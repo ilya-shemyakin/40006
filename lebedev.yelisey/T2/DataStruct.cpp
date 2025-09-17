@@ -10,7 +10,6 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
         return in;
     }
 
-    // Сбрасываем структуру
     data = DataStruct{};
     bool has_key1 = false, has_key2 = false, has_key3 = false;
 
@@ -73,16 +72,14 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
             }
 
             size_t quote_end = space_pos + 2;
-            int quote_count = 1;
-            while (quote_end < line.size() && quote_count < 2) {
-                if (line[quote_end] == '"') quote_count++;
+            while (quote_end < line.size() && line[quote_end] != '"') {
                 quote_end++;
             }
 
-            if (quote_count == 2) {
-                data.key3 = line.substr(space_pos + 2, quote_end - space_pos - 3);
+            if (quote_end < line.size()) {
+                data.key3 = line.substr(space_pos + 2, quote_end - space_pos - 2);
                 has_key3 = true;
-                pos = quote_end;
+                pos = quote_end + 1;
             }
             else {
                 break;
