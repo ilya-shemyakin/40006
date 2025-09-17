@@ -66,13 +66,13 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
             pos = paren_end + 1;
         }
         else if (field_name == "key3" && !has_key3) {
-            if (line[field_end + 1] != '"') {
+            if (line[field_end + 1] != '\"') {
                 pos = field_end + 1;
                 continue;
             }
 
             size_t quote_end = field_end + 2;
-            while (quote_end < line.size() && line[quote_end] != '"') {
+            while (quote_end < line.size() && line[quote_end] != '\"') {
                 quote_end++;
             }
 
@@ -108,23 +108,21 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& data) {
 void processData() {
     std::vector<DataStruct> dataVector;
 
-    std::copy(std::istream_iterator<DataStruct>(std::cin), std::istream_iterator<DataStruct>(), std::back_inserter(dataVector)
-    );
+    std::copy(std::istream_iterator<DataStruct>(std::cin), std::istream_iterator<DataStruct>(), std::back_inserter(dataVector));
 
     std::sort(dataVector.begin(), dataVector.end(), [](const DataStruct& a, const DataStruct& b) {
-            if (a.key1 != b.key1) {
-                return a.key1 < b.key1;
-            }
-
-            double abs_a = std::abs(a.key2);
-            double abs_b = std::abs(b.key2);
-            if (std::abs(abs_a - abs_b) > 1e-10) {
-                return abs_a < abs_b;
-            }
-
-            return a.key3.length() < b.key3.length();
+        if (a.key1 != b.key1) {
+            return a.key1 < b.key1;
         }
-    );
+
+        double abs_a = std::abs(a.key2);
+        double abs_b = std::abs(b.key2);
+        if (std::abs(abs_a - abs_b) > 1e-10) {
+            return abs_a < abs_b;
+        }
+
+        return a.key3.length() < b.key3.length();
+        });
 
     std::copy(dataVector.begin(), dataVector.end(), std::ostream_iterator<DataStruct>(std::cout, "\n"));
 }
