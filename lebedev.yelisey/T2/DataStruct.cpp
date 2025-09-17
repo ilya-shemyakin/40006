@@ -33,7 +33,7 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
         data.key1 = std::stoll(key1_str);
 
         size_t key2_end = line.find(')', key2_start);
-        std::string key2_str = line.substr(key2_start + 9, key2_end - (key2_start + 9));
+        std::string key2_str = line.substr(key2_start + 9, key2_end - (key1_start + 9));
         std::istringstream iss(key2_str);
         double real, imag;
         iss >> real >> imag;
@@ -57,16 +57,6 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& data) {
     return out;
 }
 
-bool compareDataStructs(const DataStruct& a, const DataStruct& b) {
-    if (a.key1 != b.key1) return a.key1 < b.key1;
-    
-    double abs_a = std::abs(a.key2);
-    double abs_b = std::abs(b.key2);
-    if (std::abs(abs_a - abs_b) > 1e-10) return abs_a < abs_b;
-    
-    return a.key3.length() < b.key3.length();
-}
-
 void processData() {
     std::vector<DataStruct> dataVector;
     
@@ -76,7 +66,22 @@ void processData() {
         std::back_inserter(dataVector)
     );
 
-    std::sort(dataVector.begin(), dataVector.end(), compareDataStructs);
+    std::sort(dataVector.begin(), dataVector.end(), 
+        [](const DataStruct& a, const DataStruct& b) {
+            // (a) По возрастанию key1
+            if (a.key1 != b.key1) {
+                return a.key1 < b.key1;
+            }
+            
+            double abs_a = std::abs(a.key2);
+            double abs_b = std::abs(b.key2);
+            if (std::abs(abs_a - abs_b) > 1e-10) {
+                return abs_a < abs_b;
+            }
+            
+            return a.key3.length() < b.key3.length();
+        }
+    );
 
     std::copy(
         dataVector.begin(),
