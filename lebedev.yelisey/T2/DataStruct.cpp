@@ -52,18 +52,13 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
             size_t paren_end = line.find(')', space_pos + 4);
             if (paren_end == std::string::npos) break;
 
-            std::string value_str = line.substr(space_pos + 4, paren_end - space_pos - 4);
+            std::string complex_str = line.substr(space_pos + 4, paren_end - (space_pos + 4));
 
-            size_t space_in_value = value_str.find(' ');
-            if (space_in_value == std::string::npos) break;
+            size_t space_pos_in_complex = complex_str.find(' ');
+            if (space_pos_in_complex == std::string::npos) break;
 
-            std::string real_str = value_str.substr(0, space_in_value);
-            std::string imag_str = value_str.substr(space_in_value + 1);
-
-            real_str.erase(0, real_str.find_first_not_of(" \t"));
-            real_str.erase(real_str.find_last_not_of(" \t") + 1);
-            imag_str.erase(0, imag_str.find_first_not_of(" \t"));
-            imag_str.erase(imag_str.find_last_not_of(" \t") + 1);
+            std::string real_str = complex_str.substr(0, space_pos_in_complex);
+            std::string imag_str = complex_str.substr(space_pos_in_complex + 1);
 
             try {
                 double real = std::stod(real_str);
@@ -82,17 +77,12 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
             }
 
             size_t quote_end = space_pos + 2;
-            while (quote_end < line.size()) {
-                if (line[quote_end] == '"') {
-                    if (quote_end == 0 || line[quote_end - 1] != '\\') {
-                        break;
-                    }
-                }
+            while (quote_end < line.size() && line[quote_end] != '"') {
                 quote_end++;
             }
 
             if (quote_end < line.size()) {
-                data.key3 = line.substr(space_pos + 2, quote_end - space_pos - 2);
+                data.key3 = line.substr(space_pos + 2, quote_end - (space_pos + 2));
                 has_key3 = true;
                 pos = quote_end + 1;
             }
