@@ -14,9 +14,7 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
     size_t key2_start = line.find(":key2 #c(");
     size_t key3_start = line.find(":key3 \"");
 
-    if (key1_start == std::string::npos ||
-        key2_start == std::string::npos ||
-        key3_start == std::string::npos) {
+    if (key1_start == std::string::npos || key2_start == std::string::npos || key3_start == std::string::npos) {
         in.setstate(std::ios::failbit);
         return in;
     }
@@ -25,31 +23,20 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
         size_t key1_end = line.find(':', key1_start + 1);
         std::string key1_str = line.substr(key1_start + 6, key1_end - (key1_start + 6));
 
-        if (key1_str.size() >= 2 &&
-            (key1_str.substr(key1_str.size() - 2) == "ll" ||
-                key1_str.substr(key1_str.size() - 2) == "LL")) {
+        if (key1_str.size() >= 2 && (key1_str.substr(key1_str.size() - 2) == "ll" || key1_str.substr(key1_str.size() - 2) == "LL")) {
             key1_str = key1_str.substr(0, key1_str.size() - 2);
         }
         data.key1 = std::stoll(key1_str);
 
         size_t key2_end = line.find(')', key2_start);
-        std::string key2_str = line.substr(key2_start + 9, key2_end - (key2_start + 9));
+        std::string key2_str = line.substr(key2_start + 9, key2_end - (key1_start + 9));
         std::istringstream iss(key2_str);
-        std::string real_str, imag_str;
-        iss >> real_str >> imag_str;
-        double real = std::stod(real_str);
-        double imag = std::stod(imag_str);
+        double real, imag;
+        iss >> real >> imag;
         data.key2 = std::complex<double>(real, imag);
 
-        size_t key3_end = key3_start + 7;
-        int quote_count = 0;
-        while (key3_end < line.size() && quote_count < 2) {
-            if (line[key3_end] == '"') {
-                quote_count++;
-            }
-            key3_end++;
-        }
-        data.key3 = line.substr(key3_start + 7, key3_end - (key3_start + 7) - 1);
+        size_t key3_end = line.find('"', key3_start + 7);
+        data.key3 = line.substr(key3_start + 7, key3_end - (key3_start + 7));
     }
     catch (...) {
         in.setstate(std::ios::failbit);
