@@ -84,3 +84,4 @@ void processData() {
         std::ostream_iterator<DataStruct>(std::cout, "\n")
     );
 }
+
