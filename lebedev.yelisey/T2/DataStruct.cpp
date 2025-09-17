@@ -1,6 +1,8 @@
 #include "DataStruct.h"
 #include <iomanip>
 #include <sstream>
+#include <iterator>
+#include <cmath>
 
 std::istream& operator>>(std::istream& in, DataStruct& data) {
     std::string line;
@@ -8,28 +10,37 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
         return in;
     }
 
-    size_t pos1 = line.find(":key1 ");
-    size_t pos2 = line.find(":key2 #c(");
-    size_t pos3 = line.find(":key3 \"");
-    size_t pos4 = line.find("\":)");
-
-    if (pos1 == std::string::npos || pos2 == std::string::npos ||
-        pos3 == std::string::npos || pos4 == std::string::npos) {
+    size_t key1_start = line.find(":key1 ");
+    size_t key2_start = line.find(":key2 #c(");
+    size_t key3_start = line.find(":key3 \"");
+    
+    if (key1_start == std::string::npos || 
+        key2_start == std::string::npos || 
+        key3_start == std::string::npos) {
         in.setstate(std::ios::failbit);
         return in;
     }
 
     try {
-        std::string key1Str = line.substr(pos1 + 6, line.find(':', pos1 + 1) - (pos1 + 6));
-        data.key1 = std::stoll(key1Str);
+        size_t key1_end = line.find(':', key1_start + 1);
+        std::string key1_str = line.substr(key1_start + 6, key1_end - (key1_start + 6));
+        
+        if (key1_str.size() >= 2 && 
+            (key1_str.substr(key1_str.size() - 2) == "ll" || 
+             key1_str.substr(key1_str.size() - 2) == "LL")) {
+            key1_str = key1_str.substr(0, key1_str.size() - 2);
+        }
+        data.key1 = std::stoll(key1_str);
 
-        std::string key2Str = line.substr(pos2 + 9, line.find(')', pos2) - (pos2 + 9));
-        std::istringstream iss(key2Str);
+        size_t key2_end = line.find(')', key2_start);
+        std::string key2_str = line.substr(key2_start + 9, key2_end - (key2_start + 9));
+        std::istringstream iss(key2_str);
         double real, imag;
         iss >> real >> imag;
         data.key2 = std::complex<double>(real, imag);
 
-        data.key3 = line.substr(pos3 + 7, pos4 - (pos3 + 7));
+        size_t key3_end = line.find('"', key3_start + 7);
+        data.key3 = line.substr(key3_start + 7, key3_end - (key3_start + 7));
     }
     catch (...) {
         in.setstate(std::ios::failbit);
@@ -39,7 +50,7 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
 }
 
 std::ostream& operator<<(std::ostream& out, const DataStruct& data) {
-    out << "(:key1 " << data.key1
+    out << "(:key1 " << data.key1 << "ll"
         << ":key2 #c(" << std::fixed << std::setprecision(1)
         << data.key2.real() << " " << data.key2.imag()
         << "):key3 \"" << data.key3 << "\":)";
@@ -48,21 +59,28 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& data) {
 
 bool compareDataStructs(const DataStruct& a, const DataStruct& b) {
     if (a.key1 != b.key1) return a.key1 < b.key1;
-    if (std::abs(a.key2) != std::abs(b.key2)) return std::abs(a.key2) < std::abs(b.key2);
+    
+    double abs_a = std::abs(a.key2);
+    double abs_b = std::abs(b.key2);
+    if (std::abs(abs_a - abs_b) > 1e-10) return abs_a < abs_b;
+    
     return a.key3.length() < b.key3.length();
 }
 
 void processData() {
     std::vector<DataStruct> dataVector;
-    DataStruct temp;
-
-    while (std::cin >> temp) {
-        dataVector.push_back(temp);
-    }
+    
+    std::copy(
+        std::istream_iterator<DataStruct>(std::cin),
+        std::istream_iterator<DataStruct>(),
+        std::back_inserter(dataVector)
+    );
 
     std::sort(dataVector.begin(), dataVector.end(), compareDataStructs);
 
-    for (const auto& item : dataVector) {
-        std::cout << item << std::endl;
-    }
+    std::copy(
+        dataVector.begin(),
+        dataVector.end(),
+        std::ostream_iterator<DataStruct>(std::cout, "\n")
+    );
 }
