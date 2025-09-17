@@ -1,49 +1,27 @@
 #ifndef DATASTRUCT_H
 #define DATASTRUCT_H
-
-#include <complex>
-#include <iostream>
 #include <string>
+#include <complex>
+#include <iosfwd>
+
+using Key1 = unsigned long long;
+using Key2 = std::complex<double>;
 
 struct DataStruct {
-    unsigned long long key1;
-    std::complex<double> key2;
+    Key1        key1;
+    Key2        key2;
     std::string key3;
+    std::string keyT;
 };
 
-struct DelimiterIO {
-    char exp;
-};
+bool operator==(const DataStruct& a, const DataStruct& b);
+bool operator!=(const DataStruct& a, const DataStruct& b);
+bool operator>(const DataStruct& a, const DataStruct& b);
+bool operator<=(const DataStruct& a, const DataStruct& b);
+bool operator<(const DataStruct& a, const DataStruct& b);
+bool operator>=(const DataStruct& a, const DataStruct& b);
 
-struct UnsignedLongLongIO {
-    unsigned long long& ref;
-};
 
-struct ComplexIO {
-    std::complex<double>& ref;
-};
-
-struct StringIO {
-    std::string& ref;
-};
-
-class iofmtguard {
-public:
-    iofmtguard(std::basic_ios<char>& s);
-    ~iofmtguard();
-private:
-    std::basic_ios<char>& s_;
-    std::streamsize width_;
-    char fill_;
-    std::streamsize precision_;
-    std::basic_ios<char>::fmtflags fmt_;
-};
-
-std::istream& operator>>(std::istream& in, DelimiterIO&& dest);
-std::istream& operator>>(std::istream& in, UnsignedLongLongIO&& dest);
-std::istream& operator>>(std::istream& in, ComplexIO&& dest);
-std::istream& operator>>(std::istream& in, StringIO&& dest);
-std::istream& operator>>(std::istream& in, DataStruct& dest);
-std::ostream& operator<<(std::ostream& out, const DataStruct& src);
-
+std::istream& operator>>(std::istream& in, DataStruct& v);
+std::ostream& operator<<(std::ostream& out, const DataStruct& v);
 #endif
