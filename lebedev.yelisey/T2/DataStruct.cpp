@@ -29,7 +29,10 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
 
             std::string value_str = line.substr(space_pos + 1, value_end - space_pos - 1);
 
-            if (value_str.size() >= 2 && (value_str.substr(value_str.size() - 2) == "ll" || value_str.substr(value_str.size() - 2) == "LL")) {
+            if (value_str.size() >= 2 &&
+                (value_str.substr(value_str.size() - 2) == "ll" ||
+                    value_str.substr(value_str.size() - 2) == "LL")) {
+
                 value_str = value_str.substr(0, value_str.size() - 2);
                 try {
                     data.key1 = std::stoll(value_str);
@@ -50,18 +53,25 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
             if (paren_end == std::string::npos) break;
 
             std::string value_str = line.substr(space_pos + 4, paren_end - space_pos - 4);
-            std::istringstream iss(value_str);
-            std::string real_str, imag_str;
 
-            if (iss >> real_str >> imag_str) {
-                try {
-                    double real = std::stod(real_str);
-                    double imag = std::stod(imag_str);
-                    data.key2 = std::complex<double>(real, imag);
-                    has_key2 = true;
-                }
-                catch (...) {
-                }
+            size_t space_in_value = value_str.find(' ');
+            if (space_in_value == std::string::npos) break;
+
+            std::string real_str = value_str.substr(0, space_in_value);
+            std::string imag_str = value_str.substr(space_in_value + 1);
+
+            real_str.erase(0, real_str.find_first_not_of(" \t"));
+            real_str.erase(real_str.find_last_not_of(" \t") + 1);
+            imag_str.erase(0, imag_str.find_first_not_of(" \t"));
+            imag_str.erase(imag_str.find_last_not_of(" \t") + 1);
+
+            try {
+                double real = std::stod(real_str);
+                double imag = std::stod(imag_str);
+                data.key2 = std::complex<double>(real, imag);
+                has_key2 = true;
+            }
+            catch (...) {
             }
             pos = paren_end + 1;
         }
@@ -72,7 +82,12 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
             }
 
             size_t quote_end = space_pos + 2;
-            while (quote_end < line.size() && line[quote_end] != '"') {
+            while (quote_end < line.size()) {
+                if (line[quote_end] == '"') {
+                    if (quote_end == 0 || line[quote_end - 1] != '\\') {
+                        break;
+                    }
+                }
                 quote_end++;
             }
 
