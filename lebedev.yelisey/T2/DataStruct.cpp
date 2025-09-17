@@ -68,7 +68,6 @@ void processData() {
 
     std::sort(dataVector.begin(), dataVector.end(), 
         [](const DataStruct& a, const DataStruct& b) {
-            // (a) По возрастанию key1
             if (a.key1 != b.key1) {
                 return a.key1 < b.key1;
             }
