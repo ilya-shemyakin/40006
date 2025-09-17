@@ -10,35 +10,92 @@ std::istream& operator>>(std::istream& in, DataStruct& data) {
         return in;
     }
 
-    size_t key1_start = line.find(":key1 ");
-    size_t key2_start = line.find(":key2 #c(");
-    size_t key3_start = line.find(":key3 \"");
+    // Сбрасываем структуру
+    data = DataStruct{};
+    bool has_key1 = false, has_key2 = false, has_key3 = false;
 
-    if (key1_start == std::string::npos || key2_start == std::string::npos || key3_start == std::string::npos) {
-        in.setstate(std::ios::failbit);
-        return in;
-    }
+    size_t pos = 0;
+    while (pos < line.size()) {
+        size_t field_start = line.find(':', pos);
+        if (field_start == std::string::npos) break;
 
-    try {
-        size_t key1_end = line.find(':', key1_start + 1);
-        std::string key1_str = line.substr(key1_start + 6, key1_end - (key1_start + 6));
+        size_t space_pos = line.find(' ', field_start);
+        if (space_pos == std::string::npos) break;
 
-        if (key1_str.size() >= 2 && (key1_str.substr(key1_str.size() - 2) == "ll" || key1_str.substr(key1_str.size() - 2) == "LL")) {
-            key1_str = key1_str.substr(0, key1_str.size() - 2);
+        std::string field_name = line.substr(field_start + 1, space_pos - field_start - 1);
+
+        if (field_name == "key1" && !has_key1) {
+            size_t value_end = line.find(':', space_pos + 1);
+            if (value_end == std::string::npos) break;
+
+            std::string value_str = line.substr(space_pos + 1, value_end - space_pos - 1);
+
+            if (value_str.size() >= 2 && (value_str.substr(value_str.size() - 2) == "ll" || value_str.substr(value_str.size() - 2) == "LL")) {
+                value_str = value_str.substr(0, value_str.size() - 2);
+                try {
+                    data.key1 = std::stoll(value_str);
+                    has_key1 = true;
+                }
+                catch (...) {
+                }
+            }
+            pos = value_end;
         }
-        data.key1 = std::stoll(key1_str);
+        else if (field_name == "key2" && !has_key2) {
+            if (line.substr(space_pos + 1, 3) != "#c(") {
+                pos = space_pos + 1;
+                continue;
+            }
 
-        size_t key2_end = line.find(')', key2_start);
-        std::string key2_str = line.substr(key2_start + 9, key2_end - (key1_start + 9));
-        std::istringstream iss(key2_str);
-        double real, imag;
-        iss >> real >> imag;
-        data.key2 = std::complex<double>(real, imag);
+            size_t paren_end = line.find(')', space_pos + 4);
+            if (paren_end == std::string::npos) break;
 
-        size_t key3_end = line.find('"', key3_start + 7);
-        data.key3 = line.substr(key3_start + 7, key3_end - (key3_start + 7));
+            std::string value_str = line.substr(space_pos + 4, paren_end - space_pos - 4);
+            std::istringstream iss(value_str);
+            std::string real_str, imag_str;
+
+            if (iss >> real_str >> imag_str) {
+                try {
+                    double real = std::stod(real_str);
+                    double imag = std::stod(imag_str);
+                    data.key2 = std::complex<double>(real, imag);
+                    has_key2 = true;
+                }
+                catch (...) {
+                }
+            }
+            pos = paren_end + 1;
+        }
+        else if (field_name == "key3" && !has_key3) {
+            if (line[space_pos + 1] != '"') {
+                pos = space_pos + 1;
+                continue;
+            }
+
+            size_t quote_end = space_pos + 2;
+            int quote_count = 1;
+            while (quote_end < line.size() && quote_count < 2) {
+                if (line[quote_end] == '"') quote_count++;
+                quote_end++;
+            }
+
+            if (quote_count == 2) {
+                data.key3 = line.substr(space_pos + 2, quote_end - space_pos - 3);
+                has_key3 = true;
+                pos = quote_end;
+            }
+            else {
+                break;
+            }
+        }
+        else {
+            size_t next_colon = line.find(':', space_pos + 1);
+            if (next_colon == std::string::npos) break;
+            pos = next_colon;
+        }
     }
-    catch (...) {
+
+    if (!has_key1 || !has_key2 || !has_key3) {
         in.setstate(std::ios::failbit);
     }
 
