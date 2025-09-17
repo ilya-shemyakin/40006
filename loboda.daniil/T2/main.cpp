@@ -5,18 +5,16 @@
 #include <clocale>
 #include "DataStruct.h"
 
-using namespace std;
-
 int main()
 {
     setlocale(LC_ALL, "Ru");
-    vector<DataStruct> data;
+    std::vector<DataStruct> data;
     bool flag = true;
     while (std::cin.good()) {
         DataStruct Tdata;
 
-        cin >> Tdata;
-        if (cin.eof()) {
+        std::cin >> Tdata;
+        if (std::cin.eof()) {
             flag = false;
         }
 
@@ -31,11 +29,11 @@ int main()
         std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
         return 0;
     }
-    cout << fixed << setprecision(1);
+    std::cout << std::fixed << std::setprecision(1);
     std::sort(data.begin(), data.end());
     auto it = data.begin();
     while (it != data.end()) {
-        cout << *it << '\n';
+        std::cout << *it << '\n';
         ++it;
     }
 

@@ -5,12 +5,11 @@
 #include <complex>
 #include <cctype>
 #include <cmath>
-#include <sstream>   // нужно для std::istringstream
-
-using namespace std;
 
 bool operator==(const DataStruct& a, const DataStruct& b) {
-    return ((a.key1 == b.key1) && (abs(a.key2) == abs(b.key2)) && (a.key3.length() == b.key3.length()));
+    return ((a.key1 == b.key1)
+        && (abs(a.key2) == abs(b.key2))
+        && (a.key3.length() == b.key3.length()));
 }
 
 bool operator!=(const DataStruct& a, const DataStruct& b) {
@@ -68,7 +67,7 @@ std::istream& operator>>(std::istream& in, DataStruct& v) {
     if (pos == std::string::npos) { in.setstate(std::ios::failbit); return in; }
     getline(in, instr);
     if (instr.empty()) {
-        in.setstate(ios::failbit);
+        in.setstate(std::ios::failbit);
         return in;
     }
     temp = instr;
@@ -79,7 +78,7 @@ std::istream& operator>>(std::istream& in, DataStruct& v) {
         pos = temp.find(':');
         if (temp[3] == '3') {
             k3 = temp.substr(5, pos - 5);
-            if (k3[0] == '"' && k3.find('"', 1) != string::npos && k3.length() > 2) {
+            if (k3[0] == '"' && k3.find('"', 1) != std::string::npos && k3.length() > 2) {
                 v.key3 = k3;
 
             }
@@ -90,7 +89,7 @@ std::istream& operator>>(std::istream& in, DataStruct& v) {
         }
         else if (temp[3] == '2') {
             k2 = temp.substr(5, pos - 5);
-            if (k2.find("#c(") != string::npos) {
+            if (k2.find("#c(") != std::string::npos) {
                 k2 = k2.substr(3, k2.length() - 4);
 
                 std::istringstream iss(k2);
@@ -107,8 +106,9 @@ std::istream& operator>>(std::istream& in, DataStruct& v) {
         else if (temp[3] == '1') {
             k1 = temp.substr(5, pos - 5);
 
-            string word;
-            word = k1.find("ull") != string::npos ? "ull" : k1.find("ULL") != string::npos ? "ULL" : "";
+            std::string word;
+            word = k1.find("ull") != std::string::npos ? "ull" : k1.find("ULL")
+                != std::string::npos ? "ULL" : "";
 
             if (word == "") {
                 in.setstate(std::ios::failbit);
@@ -133,6 +133,7 @@ std::istream& operator>>(std::istream& in, DataStruct& v) {
 }
 
 std::ostream& operator<<(std::ostream& out, const DataStruct& v) {
-    out << "(:key1 " << v.key1 << "ull:key2 #c(" << v.key2.real() << ' ' << v.key2.imag() << "):key3 " << v.key3 << ":)";
+    out << "(:key1 " << v.key1 << "ull:key2 #c(" << v.key2.real()
+        << ' ' << v.key2.imag() << "):key3 " << v.key3 << ":)";
     return out;
 }
