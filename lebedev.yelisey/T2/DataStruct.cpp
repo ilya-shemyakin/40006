@@ -109,7 +109,8 @@ namespace nspace {
 
         iofmtguard guard(out);
         out << "(:key1 " << dest.key1 << "ll"
-            << ":key2 #c(" << dest.key2.real() << " " << dest.key2.imag()
+            << ":key2 #c(" << std::fixed << std::setprecision(1)
+            << dest.key2.real() << " " << dest.key2.imag()
             << "):key3 \"" << dest.key3 << "\":)";
         return out;
     }
