@@ -61,8 +61,8 @@ bool operator>=(const DataStruct& a, const DataStruct& b) {
 }
 
 std::istream& operator>>(std::istream& in, DataStruct& v) {
-    std::string temp, instr, k1, k2, k3, k2_1, k2_2;
-
+    std::string temp, instr, k1, k2, k3;
+    bool got1 = false, got2 = false, got3 = false;
     if (!std::getline(in, instr)) {
         return in;
     }
@@ -92,6 +92,7 @@ std::istream& operator>>(std::istream& in, DataStruct& v) {
             else {
                 k3 = temp.substr(q1, q2 - q1 + 1);
                 v.key3 = k3;
+                got3 = true;
                 std::size_t pos = temp.find(':', q2 + 1);
                 if (pos == std::string::npos) {
                     in.setstate(std::ios::failbit);
@@ -115,8 +116,13 @@ std::istream& operator>>(std::istream& in, DataStruct& v) {
 
                     std::istringstream iss(k2);
                     double re = 0.0, im = 0.0;
-                    iss >> re >> im;
-                    v.key2 = { re, im };
+                    if (!(iss >> re >> im)) {
+                        in.setstate(std::ios::failbit);
+                    }
+                    else {
+                        v.key2 = { re, im };
+                        got2 = true;
+                    }
                 }
             }
             else {
@@ -140,7 +146,9 @@ std::istream& operator>>(std::istream& in, DataStruct& v) {
             }
             else {
                 if (k1.length() > 3) {
-                    try { v.key1 = std::stoull(k1); }
+                    try { v.key1 = std::stoull(k1); 
+                    got1 = true;
+                    }
                     catch (...) { in.setstate(std::ios::failbit); }
                 }
                 else {
@@ -148,11 +156,18 @@ std::istream& operator>>(std::istream& in, DataStruct& v) {
                 }
             }
 
-            if (!in.fail()) temp.erase(0, pos + 1);
+            if (!in.fail())
+                temp.erase(0, pos + 1);
+        }
+        else {
+            in.setstate(std::ios::failbit);
         }
 
         if (!in.good())
             break;
+    }
+    if (!(got1 && got2 && got3)) {
+        in.setstate(std::ios::failbit);
     }
 
     return in;
