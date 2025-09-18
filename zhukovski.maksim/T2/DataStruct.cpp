@@ -154,7 +154,7 @@ namespace nspace {
             return out;
         }
         iofmtguard guard(out);
-        out << "(:key1 " << dest.key1 << "d:key2 " << dest.key2 << "ll:key3 \"" << dest.key3 << "\":)";
+        out << std::fixed << std::setprecision(1) << "(:key1 " << dest.key1 << "d:key2 " << dest.key2 << "ll:key3 \"" << dest.key3 << "\":)";
         return out;
     }
 
