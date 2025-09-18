@@ -8,6 +8,7 @@
 #include <iomanip>
 #include "DataStruct.h"
 #include <cstring>
+#include <cctype>
 
 namespace nspace {
     std::istream& operator>>(std::istream& in, DelimiterIO&& dest) {
@@ -34,116 +35,124 @@ namespace nspace {
         return std::getline(in >> DelimiterIO{ '"' }, dest.ref, '"');
     }
 
-    std::istream& operator>>(std::istream& in, UllLitIO&& lit) {
+    std::istream& operator>>(std::istream& in, DblLitIO&& lit) {
         std::istream::sentry sentry(in);
         if (!sentry)
         {
             return in;
         }
-        unsigned long long value = 0;
+        double value = 0.0;
         in >> value;
         if (!in) {
             return in;
         }
         std::string s;
         std::getline(in, s, ':');
-        if (s != "ull" && s != "ULL") {
+        std::transform(s.begin(), s.end(), s.begin(),
+            [](unsigned char c) { return std::tolower(static_cast<unsigned char>(c)); });
+        if (s != "d") {
             in.setstate(std::ios::failbit);
             return in;
         }
-        in.unget();
         lit.num = value;
         return in;
     }
 
-    std::istream& operator>>(std::istream& in, UllBinIO&& bin) {
+    std::istream& operator>>(std::istream& in, SllLitIO&& lit) {
         std::istream::sentry sentry(in);
         if (!sentry)
         {
             return in;
         }
-        char prefix1 = '\0';
-        char prefix2 = '\0';
-        in >> prefix1 >> prefix2;
-        if (!(prefix1 == '0' && (prefix2 == 'b' || prefix2 == 'B'))) {
+        long long value = 0;
+        in >> value;
+        if (!in) {
+            return in;
+        }
+        std::string s;
+        std::getline(in, s, ':');
+        std::transform(s.begin(), s.end(), s.begin(),
+            [](unsigned char c) { return std::tolower(static_cast<unsigned char>(c)); });
+        if (s != "ll") {
             in.setstate(std::ios::failbit);
             return in;
         }
-        char c = '0';
-        unsigned long long value = 0;
-        while (in >> c) {
-            if (c == ':') {
-                in.unget();
-                break;
-            }
-            if (c == '0') {
-                value = (value << 1);
-            }
-            else if (c == '1') {
-                value = (value << 1) | 1;
-            }
-            else {
-                in.setstate(std::ios::failbit);
-                return in;
-            }
-        }
-        bin.num = value;
+        lit.num = value;
         return in;
     }
+
     std::istream& operator>>(std::istream& in, DataStruct& dest) {
         std::istream::sentry sentry(in);
         if (!sentry) {
             return in;
         }
         DataStruct input;
-
-        in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' };
         bool f1 = false;
         bool f2 = false;
         bool f3 = false;
-        std::string inp;
-        while (in.peek() != ')' && in) {
-            in >> inp;
-            if (inp == "key1") {
-                in >> UllLitIO{ input.key1 };
-                in >> DelimiterIO{ ':' };
-                f1 = true;
+        bool valid = true;
+
+        in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' };
+        if (!in) {
+            return in;
+        }
+
+        while (true) {
+            std::string field_name;
+            in >> field_name;
+            if (!in) {
+                break;
             }
-            else if (inp == "key2") {
-                in >> UllBinIO{ input.key2 };
-                in >> DelimiterIO{ ':' };
-                f2 = true;
+            bool field_parsed = false;
+            if (field_name == "key1" && !f1) {
+                in >> DblLitIO{ input.key1 } >> DelimiterIO{ ':' };
+                if (in) {
+                    f1 = true;
+                    field_parsed = true;
+                }
             }
-            else if (inp == "key3") {
-                in >> StringIO{ input.key3 };
-                in >> DelimiterIO{ ':' };
-                f3 = true;
+            else if (field_name == "key2" && !f2) {
+                in >> SllLitIO{ input.key2 } >> DelimiterIO{ ':' };
+                if (in) {
+                    f2 = true;
+                    field_parsed = true;
+                }
             }
-            else {
+            else if (field_name == "key3" && !f3) {
+                in >> StringIO{ input.key3 } >> DelimiterIO{ ':' };
+                if (in) {
+                    f3 = true;
+                    field_parsed = true;
+                }
+            }
+            if (!field_parsed) {
+                valid = false;
                 in.setstate(std::ios::failbit);
+                break;
             }
         }
+
+        if (in.fail()) {
+            in.clear();
+        }
         in >> DelimiterIO{ ')' };
-        if (f1 && f2 && f3 && in)
+        if (in && valid && f1 && f2 && f3) {
             dest = input;
-        else
+        }
+        else {
             in.setstate(std::ios::failbit);
+        }
         return in;
     }
+
     std::ostream& operator<<(std::ostream& out, const DataStruct& dest) {
         std::ostream::sentry sentry(out);
         if (!sentry)
         {
             return out;
         }
-        std::string k2 = "0";
-        unsigned long long num = dest.key2;
-        while (num) {
-            k2 += (num % 2 ? "1" : "0");
-            num = num / 2;
-        }
         iofmtguard guard(out);
-        out << "(:key1 " << dest.key1 << "ull:key2 0b" << k2 << ":key3 \"" << dest.key3 << "\":)";
+        out << "(:key1 " << dest.key1 << "d:key2 " << dest.key2 << "ll:key3 \"" << dest.key3 << "\":)";
         return out;
     }
 
@@ -154,7 +163,7 @@ namespace nspace {
         if (a.key2 != b.key2) {
             return a.key2 < b.key2;
         }
-        return a.key3 < b.key3;
+        return a.key3.size() < b.key3.size();
     }
 
     iofmtguard::iofmtguard(std::basic_ios<char>& s) :
