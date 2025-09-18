@@ -18,23 +18,32 @@ std::istream &operator>>(std::istream &in, Polygon &poly) {
   if (!sentry)
     return in;
 
-  int amount;
+  int amount = 0;
   Polygon input;
 
-  try {
-    in >> amount;
-
-    for (int i = 0; i < amount; i++) {
-      Point point;
-
-      in >> CharIO{'('} >> point.x >> CharIO{';'} >> point.y >> CharIO{')'};
-      input.points.push_back(point);
-    }
-  } catch (...) {
+  in >> amount;
+  if (amount < 2) {
     in.setstate(std::ios::failbit);
+    return in;
   }
 
-  if (in)
+  for (int i = 0; i < amount && in; i++) {
+    Point point;
+
+    in >> CharIO{'('} >> point.x >> CharIO{';'} >> point.y >> CharIO{')'};
+
+    if (std::find(std::begin(input.points), std::end(input.points), point) !=
+        std::end(input.points)) {
+      in.setstate(std::ios::failbit);
+      return in;
+    }
+
+    input.points.push_back(point);
+  }
+
+  if (in.peek() != '\n')
+    in.setstate(std::ios::failbit);
+  else if (in)
     poly = input;
 
   return in;
