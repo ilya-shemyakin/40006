@@ -8,23 +8,18 @@
 #include <utility>
 #include <iomanip>
 #include <limits>
+#include <cctype>
 #include "DataStruct.h"
 
 int main() {
     using namespace nspace;
 
     std::vector<DataStruct> data;
-    while (!std::cin.eof()) {
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-        std::copy(
-            std::istream_iterator<DataStruct>(std::cin),
-            std::istream_iterator<DataStruct>(),
-            std::back_inserter(data)
-        );
-    }
+    std::copy(
+        std::istream_iterator<DataStruct>(std::cin),
+        std::istream_iterator<DataStruct>(),
+        std::back_inserter(data)
+    );
 
     std::sort(data.begin(), data.end(), compare);
 

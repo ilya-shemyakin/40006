@@ -1,11 +1,12 @@
 #ifndef DATASTRUCT_H_
 #define DATASTRUCT_H_
 #include <iostream>
+#include <string>
 
 namespace nspace {
     struct DataStruct {
-        unsigned long long key1;
-        unsigned long long key2;
+        double key1;
+        long long key2;
         std::string key3;
     };
 
@@ -13,12 +14,12 @@ namespace nspace {
         char exp;
     };
 
-    struct UllLitIO {
-        unsigned long long& num;
+    struct DblLitIO {
+        double& num;
     };
 
-    struct UllBinIO {
-        unsigned long long& num;
+    struct SllLitIO {
+        long long& num;
     };
 
     struct StringIO {
@@ -40,8 +41,8 @@ namespace nspace {
 
     std::istream& operator>>(std::istream& in, DelimiterIO&& dest);
     std::istream& operator>>(std::istream& in, StringIO&& dest);
-    std::istream& operator>>(std::istream& in, UllLitIO&& lit);
-    std::istream& operator>>(std::istream& in, UllBinIO&& bin);
+    std::istream& operator>>(std::istream& in, DblLitIO&& lit);
+    std::istream& operator>>(std::istream& in, SllLitIO&& lit);
     std::istream& operator>>(std::istream& in, DataStruct& dest);
     std::ostream& operator<<(std::ostream& out, const DataStruct& dest);
 
