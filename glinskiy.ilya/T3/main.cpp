@@ -15,12 +15,14 @@
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
-    throw std::invalid_argument("No input file was passed");
+    std::cout << "ERROR: No input file was passed\n";
+    return 1;
   }
 
   std::ifstream file(argv[1]);
   if (!file) {
-    throw std::invalid_argument("Input file was invalid");
+    std::cout << "ERROR: Input file was invalid\n";
+    return 1;
   }
 
   std::vector<Polygon> polygons;
@@ -34,10 +36,6 @@ int main(int argc, char *argv[]) {
       file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
   }
-
-  std::copy(std::begin(polygons), std::end(polygons),
-            std::ostream_iterator<Polygon>(std::cout, "\n"));
-  std::cout << "\n";
 
   while (!std::cin.eof()) {
     std::string command, argument;
@@ -53,7 +51,7 @@ int main(int argc, char *argv[]) {
 
         result = std::accumulate(
             std::begin(polygons), std::end(polygons), 0.0,
-            [&](int total, const Polygon &poly) {
+            [&](double total, Polygon &poly) {
               return total + (poly.points.size() == num ? poly.getArea() : 0);
             });
       } catch (...) {
@@ -63,7 +61,7 @@ int main(int argc, char *argv[]) {
               polygons.size();
         } else if (argument == "EVEN" || argument == "ODD") {
           result = std::accumulate(std::begin(polygons), std::end(polygons),
-                                   0.0, [&](int total, const Polygon &poly) {
+                                   0.0, [&](double total, Polygon &poly) {
                                      return total +
                                             (poly.isOdd() == (argument == "ODD")
                                                  ? poly.getArea()
@@ -78,16 +76,16 @@ int main(int argc, char *argv[]) {
       std::cin >> argument;
 
       if (argument == "AREA") {
-        result = (*std::max_element(std::begin(polygons), std::end(polygons),
-                                    std::less{}))
-                     .getArea();
+        result = std::max_element(std::begin(polygons), std::end(polygons),
+                                  std::less{})
+                     ->getArea();
       } else if (argument == "VERTEXES") {
-        result = (*std::max_element(std::begin(polygons), std::end(polygons),
-                                    [](Polygon &poly1, Polygon &poly2) {
-                                      return poly1.points.size() <
-                                             poly2.points.size();
-                                    }))
-                     .getVertexes();
+        result =
+            std::max_element(std::begin(polygons), std::end(polygons),
+                             [](Polygon &poly1, Polygon &poly2) {
+                               return poly1.points.size() < poly2.points.size();
+                             })
+                ->getVertexes();
       } else {
         std::cin.setstate(std::ios::failbit);
       }
@@ -96,18 +94,17 @@ int main(int argc, char *argv[]) {
       std::cin >> argument;
 
       if (argument == "AREA") {
-        result =
-            (*std::max_element(std::begin(polygons), std::end(polygons),
-                               std::bind(std::less{}, std::placeholders::_2,
-                                         std::placeholders::_1)))
-                .getArea();
+        result = std::max_element(std::begin(polygons), std::end(polygons),
+                                  std::bind(std::less{}, std::placeholders::_2,
+                                            std::placeholders::_1))
+                     ->getArea();
       } else if (argument == "VERTEXES") {
-        result = (*std::max_element(std::begin(polygons), std::end(polygons),
-                                    [](Polygon &poly1, Polygon &poly2) {
-                                      return poly1.points.size() >
-                                             poly2.points.size();
-                                    }))
-                     .getVertexes();
+        result =
+            std::max_element(std::begin(polygons), std::end(polygons),
+                             [](Polygon &poly1, Polygon &poly2) {
+                               return poly1.points.size() > poly2.points.size();
+                             })
+                ->getVertexes();
       } else {
         std::cin.setstate(std::ios::failbit);
       }
@@ -120,11 +117,11 @@ int main(int argc, char *argv[]) {
 
         result = std::count_if(
             std::begin(polygons), std::end(polygons),
-            [&](Polygon poly) { return poly.points.size() == num; });
+            [&](Polygon &poly) { return poly.points.size() == num; });
       } catch (...) {
         if (argument == "EVEN" || argument == "ODD") {
           result = std::count_if(std::begin(polygons), std::end(polygons),
-                                 [&](Polygon poly) {
+                                 [&](Polygon &poly) {
                                    return poly.isOdd() == (argument == "ODD");
                                  });
         } else {
