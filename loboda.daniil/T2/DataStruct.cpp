@@ -63,9 +63,9 @@ bool operator>=(const DataStruct& a, const DataStruct& b) {
 std::istream& operator>>(std::istream& in, DataStruct& v) {
     std::string temp, instr, k1, k2, k3, k2_1, k2_2;
 
-    std::size_t pos = temp.find(':');
-    if (pos == std::string::npos) { in.setstate(std::ios::failbit); return in; }
-    getline(in, instr);
+    if (!std::getline(in, instr)) {
+        return in;
+    }
     if (instr.empty()) {
         in.setstate(std::ios::failbit);
         return in;
@@ -75,7 +75,8 @@ std::istream& operator>>(std::istream& in, DataStruct& v) {
     temp.erase(0, 2);
     for (int i = 0; i < 3; i++)
     {
-        pos = temp.find(':');
+        std::size_t pos = temp.find(':');
+        if (pos == std::string::npos) { in.setstate(std::ios::failbit); return in; }
         if (temp[3] == '3') {
             k3 = temp.substr(5, pos - 5);
             if (k3[0] == '"' && k3.find('"', 1) != std::string::npos && k3.length() > 2) {

@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <clocale>
-
+#include <limits>
 int main()
 {
     std::vector<DataStruct> data;
@@ -19,6 +19,7 @@ int main()
 
         if (std::cin.fail() && flag) {
             std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         else if (flag) {
             data.push_back(Tdata);
