@@ -54,6 +54,7 @@ namespace nspace {
             in.setstate(std::ios::failbit);
             return in;
         }
+        in.unget();
         lit.num = value;
         return in;
     }
@@ -78,6 +79,7 @@ namespace nspace {
             return in;
         }
         lit.num = value;
+        in.unget();
         return in;
     }
 
@@ -97,7 +99,7 @@ namespace nspace {
             return in;
         }
 
-        while (true) {
+        while (true && in.peek() != ')') {
             std::string field_name;
             in >> field_name;
             if (!in) {
