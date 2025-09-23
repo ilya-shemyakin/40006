@@ -8,14 +8,14 @@
 namespace
 {
     // Константы для замены магических чисел
-    const size_t KEY_INDEX = 3;
-    const size_t PREFIX_LENGTH = 2;          // Длина префикса "(:"
-    const size_t EXPECTED_KEYS_COUNT = 3;    // Количество ожидаемых ключей
-    const size_t MIN_ULL_LENGTH = 3;
-    const size_t MIN_HEADER_LENGTH = 4;      // Минимальная длина заголовка
-    const size_t DATA_START_POSITION = 5;    // Начало данных ключа
-    const size_t MIN_COMPLEX_LENGTH = 4;     // Минимальная длина комплексного числа
-    const size_t COMPLEX_PREFIX_LENGTH = 3;  // Длина префикса "#c("
+    const int KEY_INDEX = 3;
+    const int PREFIX_LENGTH = 2;          // Длина префикса "(:"
+    const int EXPECTED_KEYS_COUNT = 3;    // Количество ожидаемых ключей
+    const int MIN_ULL_LENGTH = 3;
+    const int MIN_HEADER_LENGTH = 4;      // Минимальная длина заголовка
+    const int DATA_START_POSITION = 5;    // Начало данных ключа
+    const int MIN_COMPLEX_LENGTH = 4;     // Минимальная длина комплексного числа
+    const int COMPLEX_PREFIX_LENGTH = 3;  // Длина префикса "#c("
 
     const char COLON = ':';
     const char QUOTE = '"';
