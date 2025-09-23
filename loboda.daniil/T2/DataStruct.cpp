@@ -5,177 +5,234 @@
 #include <complex>
 #include <cctype>
 #include <cmath>
+namespace
+{
+    // Константы для замены магических чисел
+    const size_t KEY_INDEX = 3;
+    const size_t PREFIX_LENGTH = 2;          // Длина префикса "(:"
+    const size_t EXPECTED_KEYS_COUNT = 3;    // Количество ожидаемых ключей
+    const size_t MIN_ULL_LENGTH = 3;
+    const size_t MIN_HEADER_LENGTH = 4;      // Минимальная длина заголовка
+    const size_t DATA_START_POSITION = 5;    // Начало данных ключа
+    const size_t MIN_COMPLEX_LENGTH = 4;     // Минимальная длина комплексного числа
+    const size_t COMPLEX_PREFIX_LENGTH = 3;  // Длина префикса "#c("
 
-bool operator==(const DataStruct& a, const DataStruct& b) {
-    return ((a.key1 == b.key1)
-        && (abs(a.key2) == abs(b.key2))
-        && (a.key3.length() == b.key3.length()));
+    const char COLON = ':';
+    const char QUOTE = '"';
 }
 
-bool operator!=(const DataStruct& a, const DataStruct& b) {
+bool operator==(const DataStruct& a, const DataStruct& b)
+{
+    return ((a.key1_ == b.key1_)
+            && (std::abs(a.key2_) == std::abs(b.key2_))
+            && (a.key3_.length() == b.key3_.length()));
+}
+bool operator!=(const DataStruct& a, const DataStruct& b)
+{
     return !(a == b);
 }
-
-bool operator>(const DataStruct& a, const DataStruct& b) {
-    if (a.key1 > b.key1)
+bool operator>(const DataStruct& a, const DataStruct& b)
+{
+    if (a.key1_ > b.key1_)
+    {
         return true;
-    else if (a.key1 == b.key1) {
-        if (abs(a.key2) > abs(b.key2))
+    }
+    else if (a.key1_ == b.key1_)
+    {
+        if (std::abs(a.key2_) > std::abs(b.key2_))
         {
             return true;
         }
-        else if (abs(a.key2) == abs(b.key2))
-            return (a.key3.length() > b.key3.length());
+        else if (std::abs(a.key2_) == std::abs(b.key2_))
+        {
+            return (a.key3_.length() > b.key3_.length());
+        }
 
-        return false;
     }
 
     return false;
 }
-
-bool operator<=(const DataStruct& a, const DataStruct& b) {
+bool operator<=(const DataStruct& a, const DataStruct& b)
+{
     return !(a > b);
 }
-
-bool operator<(const DataStruct& a, const DataStruct& b) {
-    if (a.key1 < b.key1)
-        return true;
-    else if (a.key1 == b.key1) {
-        if (abs(a.key2) < abs(b.key2))
-        {
-            return true;
-        }
-        else if (abs(a.key2) == abs(b.key2))
-        {
-            return(a.key3.length() < b.key3.length());
-
-            return false;
-        }
-    }
-
-    return false;
+bool operator<(const DataStruct& a, const DataStruct& b)
+{
+    return (b > a);
 }
-
-bool operator>=(const DataStruct& a, const DataStruct& b) {
+bool operator>=(const DataStruct& a, const DataStruct& b)
+{
     return !(a < b);
 }
 
-std::istream& operator>>(std::istream& in, DataStruct& v) {
+std::istream& operator>>(std::istream& in, DataStruct& v)
+{
     std::string temp, instr, k1, k2, k3;
-    bool got1 = false, got2 = false, got3 = false;
-    if (!std::getline(in, instr)) {
+    bool got1 = false;
+    bool got2 = false;
+    bool got3 = false;
+
+    if (!std::getline(in, instr))
+    {
         return in;
     }
-    if (instr.empty()) {
+    if (instr.empty())
+    {
         in.setstate(std::ios::failbit);
         return in;
     }
     temp = instr;
 
-    if (temp.size() < 2 || temp[0] != '(' || temp[1] != ':') {
+    if (temp.size() < PREFIX_LENGTH || temp[0] != '(' || temp[1] != COLON)
+    {
         in.setstate(std::ios::failbit);
         return in;
     }
-    temp.erase(0, 2);
-    for (int i = 0; i < 3; i++)
+
+    temp.erase(0, PREFIX_LENGTH);
+    for (int i = 0; i < EXPECTED_KEYS_COUNT; i++)
     {
-        if (temp.size() < 4) { in.setstate(std::ios::failbit); break; }
+        if (temp.size() < MIN_HEADER_LENGTH)
+        {
+            in.setstate(std::ios::failbit);
+            break;
+        }
 
-        if (temp[3] == '3') {
-
-            std::size_t q1 = temp.find('"', 5);
+        if (temp[KEY_INDEX] == '3')
+        {
+            std::size_t q1 = temp.find(QUOTE, DATA_START_POSITION);
             std::size_t q2 = (q1 == std::string::npos)
-                ? std::string::npos : temp.find('"', q1 + 1);
-            if (q1 == std::string::npos || q2 == std::string::npos) {
+                ? std::string::npos : temp.find(QUOTE, q1 + 1);
+            if (q1 == std::string::npos || q2 == std::string::npos)
+            {
                 in.setstate(std::ios::failbit);
             }
-            else {
+            else
+            {
                 k3 = temp.substr(q1, q2 - q1 + 1);
-                v.key3 = k3;
+                v.key3_ = k3;
                 got3 = true;
-                std::size_t pos = temp.find(':', q2 + 1);
-                if (pos == std::string::npos) {
+                std::size_t pos = temp.find(COLON, q2 + 1);
+                if (pos == std::string::npos)
+                {
                     in.setstate(std::ios::failbit);
                 }
-                else {
+                else 
+                {
                     temp.erase(0, pos + 1);
                 }
             }
         }
-        else if (temp[3] == '2') {
-            std::size_t pos = temp.find(':');
-            if (pos == std::string::npos || pos < 5) { in.setstate(std::ios::failbit); break; }
 
-            k2 = temp.substr(5, pos - 5);
-            if (k2.find("#c(") != std::string::npos) {
-                if (k2.length() < 4) {
+        else if (temp[KEY_INDEX] == '2') {
+            std::size_t pos = temp.find(COLON);
+            if (pos == std::string::npos || pos < DATA_START_POSITION)
+            {
+                in.setstate(std::ios::failbit);
+                break;
+            }
+
+            k2 = temp.substr(DATA_START_POSITION, pos - DATA_START_POSITION);
+            if (k2.find("#c(") != std::string::npos)
+            {
+                if (k2.length() < MIN_COMPLEX_LENGTH)
+                {
                     in.setstate(std::ios::failbit);
                 }
-                else {
-                    k2 = k2.substr(3, k2.length() - 4);
+                else
+                {
+                    k2 = k2.substr(COMPLEX_PREFIX_LENGTH, k2.length() - COMPLEX_PREFIX_LENGTH + 1);
 
                     std::istringstream iss(k2);
                     double re = 0.0, im = 0.0;
-                    if (!(iss >> re >> im)) {
+                    if (!(iss >> re >> im))
+                    {
                         in.setstate(std::ios::failbit);
                     }
-                    else {
-                        v.key2 = { re, im };
+                    else
+                    {
+                        v.key2_ = { re, im };
                         got2 = true;
                     }
                 }
             }
-            else {
+            else
+            {
                 in.setstate(std::ios::failbit);
             }
 
-            if (!in.fail()) temp.erase(0, pos + 1);
+            if (!in.fail())
+            {
+                temp.erase(0, pos + 1);
+            }
         }
-        else if (temp[3] == '1') {
-            std::size_t pos = temp.find(':');
-            if (pos == std::string::npos || pos < 5) { in.setstate(std::ios::failbit); break; }
 
-            k1 = temp.substr(5, pos - 5);
+        else if (temp[KEY_INDEX] == '1')
+        {
+            std::size_t pos = temp.find(COLON);
+            if (pos == std::string::npos || pos < DATA_START_POSITION)
+            {
+                in.setstate(std::ios::failbit);
+                break;
+            }
+
+            k1 = temp.substr(DATA_START_POSITION, pos - DATA_START_POSITION);
 
             std::string word;
             word = k1.find("ull") != std::string::npos ? "ull"
                 : k1.find("ULL") != std::string::npos ? "ULL" : "";
 
-            if (word == "") {
+            if (word == "")
+            {
                 in.setstate(std::ios::failbit);
             }
-            else {
-                if (k1.length() > 3) {
-                    try {
-                        v.key1 = std::stoull(k1);
+            else
+            {
+                if (k1.length() > MIN_ULL_LENGTH)
+                {
+                    try
+                    {
+                        v.key1_ = std::stoull(k1);
                         got1 = true;
                     }
-                    catch (...) { in.setstate(std::ios::failbit); }
+                    catch (...)
+                    {
+                        in.setstate(std::ios::failbit); 
+                    }
                 }
-                else {
+                else
+                {
                     in.setstate(std::ios::failbit);
                 }
             }
 
             if (!in.fail())
+            {
                 temp.erase(0, pos + 1);
+            }
         }
-        else {
+        else
+        {
             in.setstate(std::ios::failbit);
         }
 
         if (!in.good())
+        {
             break;
+        }
     }
-    if (!(got1 && got2 && got3)) {
+
+    if (!(got1 && got2 && got3))
+    {
         in.setstate(std::ios::failbit);
     }
 
     return in;
 }
 
-std::ostream& operator<<(std::ostream& out, const DataStruct& v) {
-    out << "(:key1 " << v.key1 << "ull:key2 #c(" << v.key2.real()
-        << ' ' << v.key2.imag() << "):key3 " << v.key3 << ":)";
+std::ostream& operator<<(std::ostream& out, const DataStruct& v)
+{
+    out << "(:key1 " << v.key1_ << "ull:key2 #c(" << v.key2_.real()
+        << ' ' << v.key2_.imag() << "):key3 " << v.key3_ << ":)";
     return out;
 }

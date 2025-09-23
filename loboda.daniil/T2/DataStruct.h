@@ -7,11 +7,11 @@
 using Key1 = unsigned long long;
 using Key2 = std::complex<double>;
 
-struct DataStruct {
-    Key1        key1;
-    Key2        key2;
-    std::string key3;
-    std::string keyT;
+struct DataStruct
+{
+    Key1 key1_;
+    Key2 key2_;
+    std::string key3_;
 };
 
 bool operator==(const DataStruct& a, const DataStruct& b);
