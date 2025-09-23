@@ -6,42 +6,42 @@
 #include <clocale>
 int main()
 {
-    std::vector<DataStruct> data;
-   
-    while (std::cin.good())
-    {
-        DataStruct input;
-        bool flag = true;
+	std::vector<DataStruct> data;
 
-        std::cin >> input;
-        if (std::cin.eof())
-        {
-            flag = false;
-        }
+	while (std::cin.good())
+	{
+		DataStruct input;
+		bool flag = true;
 
-        if (std::cin.fail() && flag)
-        {
-            std::cin.clear();
-        }
-        else if (flag)
-        {
-            data.push_back(input);
-        }
-    }
-    if (data.empty())
-    {
-        std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
-        return 0;
-    }
-    std::cout << std::fixed << std::setprecision(1);
-    std::sort(data.begin(), data.end());
+		std::cin >> input;
+		if (std::cin.eof())
+		{
+			flag = false;
+		}
 
-    auto it = data.begin();
-    while (it != data.end())
-    {
-        std::cout << *it << '\n';
-        ++it;
-    }
+		if (std::cin.fail() && flag)
+		{
+			std::cin.clear();
+		}
+		else if (flag)
+		{
+			data.push_back(input);
+		}
+	}
+	if (data.empty())
+	{
+		std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
+		return 0;
+	}
+	std::cout << std::fixed << std::setprecision(1);
+	std::sort(data.begin(), data.end());
 
-    return 0;
+	auto it = data.begin();
+	while (it != data.end())
+	{
+		std::cout << *it << '\n';
+		++it;
+	}
+
+	return 0;
 }
