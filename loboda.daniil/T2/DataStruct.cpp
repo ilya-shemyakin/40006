@@ -16,7 +16,8 @@ namespace
     const int DATA_START_POSITION = 5;    // Начало данных ключа
     const int MIN_COMPLEX_LENGTH = 4;     // Минимальная длина комплексного числа
     const int COMPLEX_PREFIX_LENGTH = 3;  // Длина префикса "#c("
-
+    const int COMPLEX_SUFFIX_LENGTH = 1;  // Длина суфикса ")"
+    
     const char COLON = ':';
     const char QUOTE = '"';
 }
@@ -139,7 +140,7 @@ std::istream& operator>>(std::istream& in, DataStruct& v)
                 }
                 else
                 {
-                    k2 = k2.substr(COMPLEX_PREFIX_LENGTH, k2.length() - COMPLEX_PREFIX_LENGTH + 1);
+                    k2 = k2.substr(COMPLEX_PREFIX_LENGTH, k2.length() - COMPLEX_PREFIX_LENGTH - COMPLEX_SUFFIX_LENGTH);
 
                     std::istringstream iss(k2);
                     double re = 0.0, im = 0.0;
