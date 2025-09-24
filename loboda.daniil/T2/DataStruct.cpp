@@ -141,7 +141,6 @@ std::istream& operator>>(std::istream& in, DataStruct& v)
                 else
                 {
                     k2 = k2.substr(COMPLEX_PREFIX_LENGTH, k2.length() - COMPLEX_PREFIX_LENGTH - COMPLEX_SUFFIX_LENGTH);
-
                     std::istringstream iss(k2);
                     double re = 0.0, im = 0.0;
                     if (!(iss >> re >> im))
