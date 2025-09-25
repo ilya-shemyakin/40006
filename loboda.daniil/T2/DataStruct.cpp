@@ -98,18 +98,18 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
     bool hasKey3 = false;
     in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' };
 
-    while (in >> field) 
+    while (in >> field)
     {
-        if (field == "key1") 
+        if (field == "key1")
         {
-            in >> UnsignedLongLongIO{ input.key1 } 
+            in >> UnsignedLongLongIO{ input.key1 }
             >> DelimiterIO{ ':' };
             if (in)
             {
                 hasKey1 = true;
             }
         }
-        else if (field == "key2") 
+        else if (field == "key2")
         {
             in >> ComplexIO{ input.key2 } >> DelimiterIO{ ':' };
             if (in)
@@ -117,7 +117,7 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
                 hasKey2 = true;
             }
         }
-        else if (field == "key3") 
+        else if (field == "key3")
         {
             in >> StringIO{ input.key3 } >> DelimiterIO{ ':' };
             if (in)
@@ -125,7 +125,7 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
                 hasKey3 = true;
             }
         }
-        else if (field == ")") 
+        else if (field == ")")
         {
             if (!(hasKey1 && hasKey2 && hasKey3))
             {
@@ -133,7 +133,7 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
             }
             break;
         }
-        else 
+        else
         {
             in.setstate(std::ios::failbit);
             break;
@@ -169,7 +169,8 @@ iofmtguard::iofmtguard(std::basic_ios<char>& s)
     fill_(s.fill()),
     precision_(s.precision()),
     fmt_(s.flags())
-{}
+{
+}
 
 iofmtguard::~iofmtguard()
 {

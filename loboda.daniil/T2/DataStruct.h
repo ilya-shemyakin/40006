@@ -5,36 +5,36 @@
 #include <iostream>
 #include <string>
 
-struct DataStruct 
+struct DataStruct
 {
     unsigned long long key1;
     std::complex<double> key2;
     std::string key3;
 };
 
-struct DelimiterIO 
+struct DelimiterIO
 {
     char exp;
 };
 
-struct UnsignedLongLongIO 
+struct UnsignedLongLongIO
 {
     unsigned long long& ref;
 };
 
-struct ComplexIO 
+struct ComplexIO
 {
     std::complex<double>& ref;
 };
 
-struct StringIO 
+struct StringIO
 {
     std::string& ref;
 };
 
 {
 public:
-    iofmtguard(std::basic_ios<char>& s);
+    iofmtguard(std::basic_ios<char>&s);
     ~iofmtguard();
 private:
     std::basic_ios<char>& s_;
