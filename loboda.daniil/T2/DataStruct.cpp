@@ -19,7 +19,8 @@ std::istream& operator>>(std::istream& in, DelimiterIO&& dest)
     return in;
 }
 
-std::istream& operator>>(std::istream& in, UnsignedLongLongIO&& dest) {
+std::istream& operator>>(std::istream& in, UnsignedLongLongIO&& dest)
+{
     std::istream::sentry sentry(in);
     if (!sentry)
     {
@@ -169,8 +170,7 @@ iofmtguard::iofmtguard(std::basic_ios<char>& s)
     fill_(s.fill()),
     precision_(s.precision()),
     fmt_(s.flags())
-{
-}
+{}
 
 iofmtguard::~iofmtguard()
 {
