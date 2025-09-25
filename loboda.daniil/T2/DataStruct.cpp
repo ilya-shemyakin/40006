@@ -2,7 +2,6 @@
 #include <iomanip>
 #include <sstream>
 #include <limits>
-
 std::istream& operator>>(std::istream& in, DelimiterIO&& dest)
 {
     std::istream::sentry sentry(in);
@@ -18,7 +17,6 @@ std::istream& operator>>(std::istream& in, DelimiterIO&& dest)
     }
     return in;
 }
-
 std::istream& operator>>(std::istream& in, UnsignedLongLongIO&& dest)
 {
     std::istream::sentry sentry(in);
@@ -47,7 +45,6 @@ std::istream& operator>>(std::istream& in, UnsignedLongLongIO&& dest)
     }
     return in;
 }
-
 std::istream& operator>>(std::istream& in, ComplexIO&& dest)
 {
     std::istream::sentry sentry(in);
@@ -71,7 +68,6 @@ std::istream& operator>>(std::istream& in, ComplexIO&& dest)
 
     return in;
 }
-
 std::istream& operator>>(std::istream& in, StringIO&& dest)
 {
     std::istream::sentry sentry(in);
@@ -80,10 +76,9 @@ std::istream& operator>>(std::istream& in, StringIO&& dest)
         return in;
     }
     std::getline(in >> DelimiterIO{ '"' }, dest.ref, '"');
-
+    
     return in;
 }
-
 std::istream& operator>>(std::istream& in, DataStruct& dest)
 {
     std::istream::sentry sentry(in);
@@ -148,7 +143,6 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
 
     return in;
 }
-
 std::ostream& operator<<(std::ostream& out, const DataStruct& src)
 {
     std::ostream::sentry sentry(out);
@@ -163,7 +157,6 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& src)
         << src.key2.real() << " " << src.key2.imag() << "):key3 \"" << src.key3 << "\":)";
     return out;
 }
-
 iofmtguard::iofmtguard(std::basic_ios<char>& s)
     : s_(s),
     width_(s.width()),
@@ -171,7 +164,6 @@ iofmtguard::iofmtguard(std::basic_ios<char>& s)
     precision_(s.precision()),
     fmt_(s.flags())
 {}
-
 iofmtguard::~iofmtguard()
 {
     s_.width(width_);
