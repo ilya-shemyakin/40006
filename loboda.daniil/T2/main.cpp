@@ -1,47 +1,42 @@
-#include "DataStruct.h"
+﻿#include "DataStruct.h"
 #include <iostream>
 #include <vector>
+#include <iterator>
 #include <algorithm>
-#include <iomanip>
-#include <clocale>
-int main()
-{
+#include <limits>
+
+
+bool compareDataStruct(const DataStruct& a, const DataStruct& b) {
+    if (a.key1 != b.key1)
+        return a.key1 < b.key1;
+    if (std::abs(a.key2) != std::abs(b.key2))
+        return std::abs(a.key2) < std::abs(b.key2);
+    return a.key3.length() < b.key3.length();
+}
+
+int main() {
     std::vector<DataStruct> data;
-
-    while (std::cin.good())
-    {
-        DataStruct input;
-        bool flag = true;
-
-        std::cin >> input;
-        if (std::cin.eof())
-        {
-            flag = false;
-        }
-
-        if (std::cin.fail() && flag)
-        {
+    while (std::cin.good()) {
+        std::copy(
+            std::istream_iterator<DataStruct>(std::cin),
+            std::istream_iterator<DataStruct>(),
+            std::back_inserter(data)
+        );
+        if (std::cin.fail() && !std::cin.eof()) {
             std::cin.clear();
-        }
-        else if (flag)
-        {
-            data.push_back(input);
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
-    if (data.empty())
-    {
+    if (data.empty()) {
         std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
         return 0;
     }
-    std::cout << std::fixed << std::setprecision(1);
-    std::sort(data.begin(), data.end());
 
-    auto it = data.begin();
-    while (it != data.end())
-    {
-        std::cout << *it << '\n';
-        ++it;
-    }
+    std::sort(data.begin(), data.end(), compareDataStruct);
 
-    return 0;
+    std::copy(
+        data.begin(),
+        data.end(),
+        std::ostream_iterator<DataStruct>(std::cout, "\n")
+    );
 }
