@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <sstream>
 #include <limits>
+
 std::istream& operator>>(std::istream& in, DelimiterIO&& dest)
 {
     std::istream::sentry sentry(in);
