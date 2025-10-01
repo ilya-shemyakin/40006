@@ -45,11 +45,11 @@ namespace nspace {
       return input;
     }
 
-    
+
     char suffix = '\0';
     if (input >> suffix) {
       if (suffix != DOUBLE_SUFFIX && suffix != std::toupper(DOUBLE_SUFFIX)) {
-        input.putback(suffix); 
+        input.putback(suffix);
       }
     }
 
@@ -70,12 +70,12 @@ namespace nspace {
       return input;
     }
 
-    
+
     char u = '\0', l1 = '\0', l2 = '\0';
     if (input >> u >> l1 >> l2) {
       if (!(u == 'u' && l1 == 'l' && l2 == 'l') &&
         !(u == 'U' && l1 == 'L' && l2 == 'L')) {
-        
+
         input.putback(l2);
         input.putback(l1);
         input.putback(u);
@@ -125,7 +125,7 @@ namespace nspace {
     bool isKey2Found = false;
     bool isKey3Found = false;
 
-    
+
     std::ios_base::iostate state = input.rdstate();
 
     input >> DelimiterIO{ OPEN_BRACKET } >> DelimiterIO{ COLON };
@@ -152,14 +152,14 @@ namespace nspace {
         }
       }
       else {
-        
+
         std::string temp;
         std::getline(input, temp, ':');
         input.putback(':');
       }
     }
 
-    
+
     if (input && input.peek() == CLOSE_BRACKET) {
       input >> DelimiterIO{ CLOSE_BRACKET };
     }
@@ -168,7 +168,7 @@ namespace nspace {
       destination = inputData;
     }
     else {
-      
+
       input.setstate(state | std::ios::failbit);
     }
 
