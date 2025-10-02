@@ -12,14 +12,22 @@ int main()
 {
   std::vector<DataStruct> data;
 
-  std::copy(
-    std::istream_iterator<DataStruct>(std::cin),
-    std::istream_iterator<DataStruct>(),
-    std::back_inserter(data)
-  );
+  try {
+    std::copy(
+      std::istream_iterator<DataStruct>(std::cin),
+      std::istream_iterator<DataStruct>(),
+      std::back_inserter(data)
+    );
+  }
+  catch (...) {
+  }
 
-  if (data.empty())
-  {
+  if (!std::cin.eof() && std::cin.fail()) {
+    std::cin.clear();
+  }
+
+  if (data.empty()) {
+    std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
     return 0;
   }
 
