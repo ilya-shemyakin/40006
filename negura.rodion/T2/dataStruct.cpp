@@ -1,4 +1,8 @@
 #include "DataStruct.h"
+#include <sstream>
+#include <cctype>
+#include <iomanip>
+#include <algorithm>
 
 namespace nspace {
 
@@ -116,12 +120,9 @@ namespace nspace {
   }
 
   std::ostream& operator<<(std::ostream& output, const DataStruct& source) {
-    output << "(:key1 " << std::fixed <<
-
-
-      std::setprecision(1) << source.key1 << "d:"
-      << "key2 " << source.key2 << "ull:"
-      << "key3 \"" << source.key3 << "\":)";
+    output << "(:key1 " << std::fixed << std::setprecision(1) << source.key1 << "d:"
+           << "key2 " << source.key2 << "ull:"
+           << "key3 \"" << source.key3 << "\":)";
     return output;
   }
 
