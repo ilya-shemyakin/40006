@@ -12,17 +12,14 @@ int main()
 {
   std::vector<DataStruct> data;
 
-  try {
-    std::copy(
-      std::istream_iterator<DataStruct>(std::cin),
-      std::istream_iterator<DataStruct>(),
-      std::back_inserter(data)
-    );
-  } catch (...) {
-    // Игнорируем ошибки парсинга
+  DataStruct temp;
+  while (std::cin >> temp) {
+    data.push_back(temp);
+
+    std::cin >> std::ws;
   }
 
-  if (!std::cin.eof() && std::cin.fail()) {
+  if (!std::cin.eof()) {
     std::cin.clear();
   }
 
@@ -31,16 +28,13 @@ int main()
     return 0;
   }
 
-  // Используем текст с опечаткой как в тесте
   std::cout << "Atleast one supported record type" << std::endl;
 
   std::sort(data.begin(), data.end(), compareDataStructs);
 
-  std::copy(
-    data.begin(),
-    data.end(),
-    std::ostream_iterator<DataStruct>(std::cout, "\n")
-  );
+  for (const auto& item : data) {
+    std::cout << item << std::endl;
+  }
 
   return 0;
 }

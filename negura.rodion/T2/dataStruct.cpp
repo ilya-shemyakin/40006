@@ -46,9 +46,6 @@ namespace nspace {
 
     char suffix = '\0';
     if (input >> suffix) {
-      if (suffix != 'd' && suffix != 'D') {
-        input.putback(suffix);
-      }
     }
 
     destination.reference = value;
@@ -70,12 +67,6 @@ namespace nspace {
 
     char u = '\0', l1 = '\0', l2 = '\0';
     if (input >> u >> l1 >> l2) {
-      if (!(u == 'u' && l1 == 'l' && l2 == 'l') &&
-        !(u == 'U' && l1 == 'L' && l2 == 'L')) {
-        input.putback(l2);
-        input.putback(l1);
-        input.putback(u);
-      }
     }
 
     destination.reference = value;
@@ -88,14 +79,7 @@ namespace nspace {
       return input;
     }
 
-    char firstChar = input.peek();
-    if (firstChar == QUOTE_CHAR) {
-      input >> DelimiterIO{ QUOTE_CHAR };
-      std::getline(input, destination.reference, QUOTE_CHAR);
-    }
-    else {
-      input >> destination.reference;
-    }
+    input >> destination.reference;
     return input;
   }
 
@@ -125,67 +109,43 @@ namespace nspace {
 
     std::ios_base::iostate originalState = input.rdstate();
 
-    input >> DelimiterIO{ OPEN_BRACKET } >> DelimiterIO{ COLON };
+    char openBracket, colon1;
+    input >> openBracket >> colon1;
 
-    if (!input) {
+    if (openBracket != OPEN_BRACKET || colon1 != COLON) {
       input.clear(originalState);
       input.setstate(std::ios::failbit);
       return input;
     }
 
-    int attempts = 0;
-    const int maxAttempts = 10;
-
-    while (input && input.peek() != CLOSE_BRACKET && input.peek() != EOF && attempts < maxAttempts) {
-      attempts++;
+    while (input && input.peek() != CLOSE_BRACKET && input.peek() != EOF) {
       std::string fieldName;
       if (!(input >> fieldName)) {
         break;
       }
 
       if (fieldName == KEY1_LABEL) {
-        std::ios_base::iostate key1State = input.rdstate();
         if (input >> DoubleLiteralIO{ inputData.key1 }) {
           isKey1Found = true;
-          char nextChar = input.peek();
-          if (nextChar == COLON) {
-            input >> DelimiterIO{ COLON };
-          }
         }
-        else {
-          input.clear(key1State);
-          std::string temp;
-          std::getline(input, temp, ':');
+        if (input.peek() == COLON) {
+          input.ignore();
         }
       }
       else if (fieldName == KEY2_LABEL) {
-        std::ios_base::iostate key2State = input.rdstate();
         if (input >> UnsignedLongLongLiteralIO{ inputData.key2 }) {
           isKey2Found = true;
-          char nextChar = input.peek();
-          if (nextChar == COLON) {
-            input >> DelimiterIO{ COLON };
-          }
         }
-        else {
-          input.clear(key2State);
-          std::string temp;
-          std::getline(input, temp, ':');
+        if (input.peek() == COLON) {
+          input.ignore();
         }
       }
       else if (fieldName == KEY3_LABEL) {
-        std::ios_base::iostate key3State = input.rdstate();
         if (input >> StringIO{ inputData.key3 }) {
           isKey3Found = true;
-          char nextChar = input.peek();
-          if (nextChar == COLON) {
-            input >> DelimiterIO{ COLON };
-          }
         }
-        else {
-          input.clear(key3State);
-          std::string temp;
-          std::getline(input, temp, ':');
+        if (input.peek() == COLON) {
+          input.ignore();
         }
       }
       else {
@@ -195,7 +155,7 @@ namespace nspace {
     }
 
     if (input && input.peek() == CLOSE_BRACKET) {
-      input >> DelimiterIO{ CLOSE_BRACKET };
+      input.ignore();
     }
 
     if (input && isKey1Found && isKey2Found && isKey3Found) {
