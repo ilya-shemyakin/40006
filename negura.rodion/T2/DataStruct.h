@@ -3,24 +3,46 @@
 
 #include <iostream>
 #include <string>
-#include <sstream>
-#include <cctype>
-#include <iomanip>
-#include <algorithm>
 
-namespace nspace {
+struct DataStruct {
+  double key1;
+  unsigned long long key2;
+  std::string key3;
+};
 
-  struct DataStruct {
-    double key1;
-    unsigned long long key2;
-    std::string key3;
-  };
+struct DelimiterIO {
+  char exp;
+};
 
-  std::istream& operator>>(std::istream& input, DataStruct& destination);
-  std::ostream& operator<<(std::ostream& output, const DataStruct& source);
+struct DoubleIO {
+  double& ref;
+};
 
-  bool compareDataStructs(const DataStruct& first, const DataStruct& second);
+struct UnsignedIO {
+  unsigned long long& ref;
+};
 
-}
+struct StringIO {
+  std::string& ref;
+};
+
+class iofmtguard {
+public:
+  iofmtguard(std::basic_ios<char>& s);
+  ~iofmtguard();
+private:
+  std::basic_ios< char >& s_;
+  std::streamsize width_;
+  char fill_;
+  std::streamsize precision_;
+  std::basic_ios< char >::fmtflags fmt_;
+};
+
+std::istream& operator>>(std::istream& in, DelimiterIO&& dest);
+std::istream& operator>>(std::istream& in, DoubleIO&& dest);
+std::istream& operator>>(std::istream& in, UnsignedIO&& dest);
+std::istream& operator>>(std::istream& in, StringIO&& dest);
+std::istream& operator>>(std::istream& in, DataStruct& dest);
+std::ostream& operator<<(std::ostream& out, const DataStruct& dest);
 
 #endif

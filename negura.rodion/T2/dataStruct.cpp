@@ -1,135 +1,136 @@
-#include "DataStruct.h"
-#include <sstream>
-#include <cctype>
+#include <iostream>
+#include <string>
 #include <iomanip>
-#include <algorithm>
+#include <sstream>
+#include "DataStruct.h"
 
-namespace nspace {
+std::istream& operator>>(std::istream& in, DelimiterIO&& dest) {
+  std::istream::sentry sentry(in);
+  if (!sentry) {
+    return in;
+  }
+  char c = '0';
+  in >> c;
+  if (in && (c != dest.exp)) {
+    in.setstate(std::ios::failbit);
+  }
+  return in;
+}
 
-  static bool parseDoubleWithSuffix(const std::string& token, double& out) {
-    size_t len = token.size();
-    if (len < 2) return false;
-    if (token[len - 1] != 'd' && token[len - 1] != 'D') return false;
-    std::string numberPart = token.substr(0, len - 1);
-    try {
-      size_t pos = 0;
-      out = std::stod(numberPart, &pos);
-      if (pos != numberPart.size()) return false;
+std::istream& operator>>(std::istream& in, DoubleIO&& dest) {
+  std::istream::sentry sentry(in);
+  if (!sentry) {
+    return in;
+  }
+  return in >> dest.ref >> DelimiterIO{ 'd' };
+}
+
+std::istream& operator>>(std::istream& in, UnsignedIO&& dest) {
+  std::istream::sentry sentry(in);
+  if (!sentry) {
+    return in;
+  }
+  std::string str;
+  char c;
+
+  while (in.get(c)) {
+    if (c == ':' || isspace(c)) {
+      in.unget();
+      break;
     }
-    catch (...) {
-      return false;
-    }
-    return true;
+    str.push_back(c);
   }
 
-  static bool parseUnsignedLongLongWithSuffix(const std::string& token, unsigned long long& out) {
-    std::string s = token;
-    if (s.size() < 3) return false;
-    std::string suffix = s.substr(s.size() - 3);
-    std::transform(suffix.begin(), suffix.end(), suffix.begin(), ::tolower);
-    if (suffix != "ull") return false;
-    std::string numberPart = s.substr(0, s.size() - 3);
-    try {
-      size_t pos = 0;
-      out = std::stoull(numberPart, &pos, 0);
-      if (pos != numberPart.size()) return false;
+  bool has_ull_suffix = (str.size() >= 3) &&
+    (tolower(str[str.size() - 1]) == 'l') &&
+    (tolower(str[str.size() - 2]) == 'l') &&
+    (tolower(str[str.size() - 3]) == 'u');
+
+  try {
+    if (!has_ull_suffix) {
+      in.setstate(std::ios::failbit);
+      return in;
     }
-    catch (...) {
-      return false;
+    std::string number = str.substr(0, str.size() - 3);
+    dest.ref = std::stoull(number);
+  }
+  catch (...) {
+    in.setstate(std::ios::failbit);
+  }
+  return in;
+}
+
+std::istream& operator>>(std::istream& in, StringIO&& dest) {
+  std::istream::sentry sentry(in);
+  if (!sentry) {
+    return in;
+  }
+  return std::getline(in >> DelimiterIO{ '"' }, dest.ref, '"');
+}
+
+std::istream& operator>>(std::istream& in, DataStruct& dest) {
+  DataStruct temp;
+  in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' };
+
+  std::string label;
+  bool flag1 = false;
+  bool flag2 = false;
+  bool flag3 = false;
+
+  while (in >> label) {
+    if (label == "key1") {
+      in >> DoubleIO{ temp.key1 } >> DelimiterIO{ ':' };
+      flag1 = true;
     }
-    return true;
+    else if (label == "key2") {
+      in >> UnsignedIO{ temp.key2 } >> DelimiterIO{ ':' };
+      flag2 = true;
+    }
+    else if (label == "key3") {
+      in >> StringIO{ temp.key3 } >> DelimiterIO{ ':' };
+      flag3 = true;
+    }
+    else if (label == ")") {
+      break;
+    }
+    else {
+      in.setstate(std::ios::failbit);
+      break;
+    }
   }
 
-  static bool parseStringWithQuotes(const std::string& token, std::string& out) {
-    if (token.size() < 2) return false;
-    if (token.front() != '"' || token.back() != '"') return false;
-    out = token.substr(1, token.size() - 2);
-    return true;
+  if (in && flag1 && flag2 && flag3) {
+    dest = temp;
   }
-
-  std::istream& operator>>(std::istream& input, DataStruct& destination) {
-    std::string line;
-    if (!std::getline(input, line)) {
-      input.setstate(std::ios::failbit);
-      return input;
-    }
-
-    size_t start = line.find("(:");
-    size_t end = line.rfind(":)");
-    if (start == std::string::npos || end == std::string::npos || start >= end) {
-      input.setstate(std::ios::failbit);
-      return input;
-    }
-
-    std::string content = line.substr(start + 2, end - start - 2);
-
-    destination.key1 = 0;
-    destination.key2 = 0;
-    destination.key3.clear();
-
-    std::istringstream ss(content);
-    std::string token;
-
-    bool key1_found = false;
-    bool key2_found = false;
-    bool key3_found = false;
-
-    while (std::getline(ss, token, ':')) {
-      if (token.empty()) continue;
-      size_t space_pos = token.find(' ');
-      if (space_pos == std::string::npos) {
-        input.setstate(std::ios::failbit);
-        return input;
-      }
-      std::string key = token.substr(0, space_pos);
-      std::string value = token.substr(space_pos + 1);
-
-      if (key == "key1") {
-        if (key1_found || !parseDoubleWithSuffix(value, destination.key1)) {
-          input.setstate(std::ios::failbit);
-          return input;
-        }
-        key1_found = true;
-      }
-      else if (key == "key2") {
-        if (key2_found || !parseUnsignedLongLongWithSuffix(value, destination.key2)) {
-          input.setstate(std::ios::failbit);
-          return input;
-        }
-        key2_found = true;
-      }
-      else if (key == "key3") {
-        if (key3_found || !parseStringWithQuotes(value, destination.key3)) {
-          input.setstate(std::ios::failbit);
-          return input;
-        }
-        key3_found = true;
-      }
-      else {
-        input.setstate(std::ios::failbit);
-        return input;
-      }
-    }
-
-    if (!(key1_found && key2_found && key3_found)) {
-      input.setstate(std::ios::failbit);
-      return input;
-    }
-
-    return input;
+  else {
+    in.setstate(std::ios::failbit);
   }
+  return in;
+}
 
-  std::ostream& operator<<(std::ostream& output, const DataStruct& source) {
-    output << "(:key1 " << std::fixed << std::setprecision(1) << source.key1 << "d:"
-           << "key2 " << source.key2 << "ull:"
-           << "key3 \"\" << source.key3 << "\":)";
-    return output;
+std::ostream& operator<<(std::ostream& out, const DataStruct& data) {
+  std::ostream::sentry sentry(out);
+  if (!sentry) {
+    return out;
   }
+  iofmtguard fmtguard(out);
+  out << "(:key1 " << std::fixed << std::setprecision(1) << data.key1 << "d"
+    << ":key2 " << data.key2 << "ull"
+    << ":key3 \"" << data.key3 << "\":)";
+  return out;
+}
 
-  bool compareDataStructs(const DataStruct& first, const DataStruct& second) {
-    if (first.key1 != second.key1) return first.key1 < second.key1;
-    if (first.key2 != second.key2) return first.key2 < second.key2;
-    return first.key3.length() < second.key3.length();
-  }
+iofmtguard::iofmtguard(std::basic_ios< char >& s) :
+  s_(s),
+  width_(s.width()),
+  fill_(s.fill()),
+  precision_(s.precision()),
+  fmt_(s.flags())
+{}
 
+iofmtguard::~iofmtguard() {
+  s_.width(width_);
+  s_.fill(fill_);
+  s_.precision(precision_);
+  s_.flags(fmt_);
 }
