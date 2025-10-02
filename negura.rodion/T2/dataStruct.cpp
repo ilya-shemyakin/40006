@@ -39,11 +39,12 @@ namespace nspace {
 
     double value = 0.0;
     input >> value;
-
+    
     if (!input) {
       return input;
     }
 
+    // Пробуем прочитать суффикс 'd', но если его нет - не ошибка
     char suffix = '\0';
     if (input >> suffix) {
       if (suffix != 'd' && suffix != 'D') {
@@ -63,15 +64,16 @@ namespace nspace {
 
     unsigned long long value = 0;
     input >> value;
-
+    
     if (!input) {
       return input;
     }
 
+    // Пробуем прочитать суффикс 'ull', но если его нет - не ошибка
     char u = '\0', l1 = '\0', l2 = '\0';
     if (input >> u >> l1 >> l2) {
-      if (!(u == 'u' && l1 == 'l' && l2 == 'l') &&
-        !(u == 'U' && l1 == 'L' && l2 == 'L')) {
+      if (!(u == 'u' && l1 == 'l' && l2 == 'l') && 
+          !(u == 'U' && l1 == 'L' && l2 == 'L')) {
         input.putback(l2);
         input.putback(l1);
         input.putback(u);
@@ -92,7 +94,7 @@ namespace nspace {
     if (!input) {
       return input;
     }
-
+    
     std::getline(input, destination.reference, QUOTE_CHAR);
     return input;
   }
@@ -121,8 +123,10 @@ namespace nspace {
     bool isKey2Found = false;
     bool isKey3Found = false;
 
+    // Сохраняем состояние потока
     std::ios_base::iostate originalState = input.rdstate();
-
+    
+    // Пробуем прочитать запись
     input >> DelimiterIO{ OPEN_BRACKET } >> DelimiterIO{ COLON };
 
     if (!input) {
@@ -131,6 +135,7 @@ namespace nspace {
       return input;
     }
 
+    // Читаем поля пока не дойдем до конца записи
     while (input && input.peek() != CLOSE_BRACKET && input.peek() != EOF) {
       std::string fieldName;
       if (!(input >> fieldName)) {
@@ -138,52 +143,57 @@ namespace nspace {
       }
 
       if (fieldName == KEY1_LABEL) {
+        // Пробуем прочитать как double
         if (input >> DoubleLiteralIO{ inputData.key1 }) {
           isKey1Found = true;
           input >> DelimiterIO{ COLON };
-        }
-        else {
+        } else {
+          // Если не получилось, пропускаем это поле
           input.clear();
           std::string temp;
           std::getline(input, temp, ':');
         }
       }
       else if (fieldName == KEY2_LABEL) {
+        // Пробуем прочитать как unsigned long long
         if (input >> UnsignedLongLongLiteralIO{ inputData.key2 }) {
           isKey2Found = true;
           input >> DelimiterIO{ COLON };
-        }
-        else {
+        } else {
+          // Если не получилось, пропускаем это поле
           input.clear();
           std::string temp;
           std::getline(input, temp, ':');
         }
       }
       else if (fieldName == KEY3_LABEL) {
+        // Пробуем прочитать строку
         if (input >> StringIO{ inputData.key3 }) {
           isKey3Found = true;
           input >> DelimiterIO{ COLON };
-        }
-        else {
+        } else {
+          // Если не получилось, пропускаем это поле
           input.clear();
           std::string temp;
           std::getline(input, temp, ':');
         }
       }
       else {
+        // Неизвестное поле - пропускаем до следующего ':'
         std::string temp;
         std::getline(input, temp, ':');
       }
     }
 
+    // Читаем закрывающую скобку
     if (input && input.peek() == CLOSE_BRACKET) {
       input >> DelimiterIO{ CLOSE_BRACKET };
     }
 
+    // Если нашли все три поля - успех
     if (input && isKey1Found && isKey2Found && isKey3Found) {
       destination = inputData;
-    }
-    else {
+    } else {
       input.clear(originalState);
       input.setstate(std::ios::failbit);
     }
@@ -191,7 +201,7 @@ namespace nspace {
     return input;
   }
 
-  std::ostream& operator<<(std::ostream& output, const DataStruct& source) {
+  std::ostream& operator>>(std::ostream& output, const DataStruct& source) {
     std::ostream::sentry sentry(output);
     if (!sentry) {
       return output;
