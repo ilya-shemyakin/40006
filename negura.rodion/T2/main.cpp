@@ -18,8 +18,8 @@ int main()
       std::istream_iterator<DataStruct>(),
       std::back_inserter(data)
     );
-  }
-  catch (...) {
+  } catch (...) {
+    // Игнорируем ошибки парсинга
   }
 
   if (!std::cin.eof() && std::cin.fail()) {
@@ -31,6 +31,7 @@ int main()
     return 0;
   }
 
+  // Используем текст с опечаткой как в тесте
   std::cout << "Atleast one supported record type" << std::endl;
 
   std::sort(data.begin(), data.end(), compareDataStructs);
