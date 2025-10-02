@@ -9,201 +9,200 @@
 
 namespace nspace {
 
-  const char QUOTE_CHAR = '"';
-  const char OPEN_BRACKET = '(';
-  const char CLOSE_BRACKET = ')';
-  const char COLON = ':';
-  const std::string KEY1_LABEL = "key1";
-  const std::string KEY2_LABEL = "key2";
-  const std::string KEY3_LABEL = "key3";
+const char QUOTE_CHAR = '"';
+const char OPEN_BRACKET = '(';
+const char CLOSE_BRACKET = ')';
+const char COLON = ':';
+const std::string KEY1_LABEL = "key1";
+const std::string KEY2_LABEL = "key2";
+const std::string KEY3_LABEL = "key3";
 
-  std::istream& operator>>(std::istream& input, DelimiterIO&& destination) {
-    std::istream::sentry sentry(input);
-    if (!sentry) {
-      return input;
-    }
+std::istream& operator>>(std::istream& input, DelimiterIO&& destination) {
+std::istream::sentry sentry(input);
+if (!sentry) {
+return input;
+}
 
-    char character = '\0';
-    input >> character;
-    if (input && (character != destination.expected)) {
-      input.setstate(std::ios::failbit);
-    }
-    return input;
-  }
+char character = '\0';
+input >> character;
+if (input && (character != destination.expected)) {
+input.setstate(std::ios::failbit);
+}
+return input;
+}
 
-  std::istream& operator>>(std::istream& input, DoubleLiteralIO&& destination) {
-    std::istream::sentry sentry(input);
-    if (!sentry) {
-      return input;
-    }
+std::istream& operator>>(std::istream& input, DoubleLiteralIO&& destination) {
+std::istream::sentry sentry(input);
+if (!sentry) {
+return input;
+}
 
-    double value = 0.0;
-    input >> value;
+double value = 0.0;
+input >> value;
 
-    if (!input) {
-      return input;
-    }
+if (!input) {
+return input;
+}
 
-    char suffix = '\0';
-    if (input >> suffix) {
-    }
+char suffix = '\0';
+if (input >> suffix) {
+}
 
-    destination.reference = value;
-    return input;
-  }
+destination.reference = value;
+return input;
+}
 
-  std::istream& operator>>(std::istream& input, UnsignedLongLongLiteralIO&& destination) {
-    std::istream::sentry sentry(input);
-    if (!sentry) {
-      return input;
-    }
+std::istream& operator>>(std::istream& input, UnsignedLongLongLiteralIO&& destination) {
+std::istream::sentry sentry(input);
+if (!sentry) {
+return input;
+}
 
-    unsigned long long value = 0;
-    input >> value;
+unsigned long long value = 0;
+input >> value;
 
-    if (!input) {
-      return input;
-    }
+if (!input) {
+return input;
+}
 
-    char u = '\0', l1 = '\0', l2 = '\0';
-    if (input >> u >> l1 >> l2) {
-    }
+char u = '\0', l1 = '\0', l2 = '\0';
+if (input >> u >> l1 >> l2) {
+}
 
-    destination.reference = value;
-    return input;
-  }
+destination.reference = value;
+return input;
+}
 
-  std::istream& operator>>(std::istream& input, StringIO&& destination) {
-    std::istream::sentry sentry(input);
-    if (!sentry) {
-      return input;
-    }
+std::istream& operator>>(std::istream& input, StringIO&& destination) {
+std::istream::sentry sentry(input);
+if (!sentry) {
+return input;
+}
 
-    input >> destination.reference;
-    return input;
-  }
+input >> destination.reference;
+return input;
+}
 
-  std::istream& operator>>(std::istream& input, LabelIO&& destination) {
-    std::istream::sentry sentry(input);
-    if (!sentry) {
-      return input;
-    }
+std::istream& operator>>(std::istream& input, LabelIO&& destination) {
+std::istream::sentry sentry(input);
+if (!sentry) {
+return input;
+}
 
-    std::string data;
-    if ((input >> data) && (data != destination.expected)) {
-      input.setstate(std::ios::failbit);
-    }
-    return input;
-  }
+std::string data;
+if ((input >> data) && (data != destination.expected)) {
+input.setstate(std::ios::failbit);
+}
+return input;
+}
 
-  std::istream& operator>>(std::istream& input, DataStruct& destination) {
-    std::istream::sentry sentry(input);
-    if (!sentry) {
-      return input;
-    }
+std::istream& operator>>(std::istream& input, DataStruct& destination) {
+std::istream::sentry sentry(input);
+if (!sentry) {
+return input;
+}
 
-    DataStruct inputData;
-    bool isKey1Found = false;
-    bool isKey2Found = false;
-    bool isKey3Found = false;
+DataStruct inputData;
+bool isKey1Found = false;
+bool isKey2Found = false;
+bool isKey3Found = false;
 
-    std::ios_base::iostate originalState = input.rdstate();
+std::ios_base::iostate originalState = input.rdstate();
 
-    char openBracket, colon1;
-    input >> openBracket >> colon1;
+char openBracket, colon1;
+input >> openBracket >> colon1;
 
-    if (openBracket != OPEN_BRACKET || colon1 != COLON) {
-      input.clear(originalState);
-      input.setstate(std::ios::failbit);
-      return input;
-    }
+if (openBracket != OPEN_BRACKET || colon1 != COLON) {
+input.clear(originalState);
+input.setstate(std::ios::failbit);
+return input;
+}
 
-    while (input && input.peek() != CLOSE_BRACKET && input.peek() != EOF) {
-      std::string fieldName;
-      if (!(input >> fieldName)) {
-        break;
-      }
+while (input && input.peek() != CLOSE_BRACKET && input.peek() != EOF) {
+std::string fieldName;
+if (!(input >> fieldName)) {
+break;
+}
 
-      if (fieldName == KEY1_LABEL) {
-        if (input >> DoubleLiteralIO{ inputData.key1 }) {
-          isKey1Found = true;
-        }
-        if (input.peek() == COLON) {
-          input.ignore();
-        }
-      }
-      else if (fieldName == KEY2_LABEL) {
-        if (input >> UnsignedLongLongLiteralIO{ inputData.key2 }) {
-          isKey2Found = true;
-        }
-        if (input.peek() == COLON) {
-          input.ignore();
-        }
-      }
-      else if (fieldName == KEY3_LABEL) {
-        if (input >> StringIO{ inputData.key3 }) {
-          isKey3Found = true;
-        }
-        if (input.peek() == COLON) {
-          input.ignore();
-        }
-      }
-      else {
-        std::string temp;
-        std::getline(input, temp, ':');
-      }
-    }
+if (fieldName == KEY1_LABEL) {
+if (input >> DoubleLiteralIO{ inputData.key1 }) {
+isKey1Found = true;
+}
+if (input.peek() == COLON) {
+input.ignore();
+}
+}
+else if (fieldName == KEY2_LABEL) {
+if (input >> UnsignedLongLongLiteralIO{ inputData.key2 }) {
+isKey2Found = true;
+}
+if (input.peek() == COLON) {
+input.ignore();
+}
+}
+else if (fieldName == KEY3_LABEL) {
+if (input >> StringIO{ inputData.key3 }) {
+isKey3Found = true;
+}
+if (input.peek() == COLON) {
+input.ignore();
+}
+}
+else {
+std::string temp;
+std::getline(input, temp, ':');
+}
+}
 
-    if (input && input.peek() == CLOSE_BRACKET) {
-      input.ignore();
-    }
+if (input && input.peek() == CLOSE_BRACKET) {
+input.ignore();
+}
 
-    if (input && isKey1Found && isKey2Found && isKey3Found) {
-      destination = inputData;
-    }
-    else {
-      input.clear(originalState);
-      input.setstate(std::ios::failbit);
-    }
+if (input && isKey1Found && isKey2Found && isKey3Found) {
+destination = inputData;
+} else {
+input.clear(originalState);
+input.setstate(std::ios::failbit);
+}
 
-    return input;
-  }
+return input;
+}
 
-  std::ostream& operator<<(std::ostream& output, const DataStruct& source) {
-    std::ostream::sentry sentry(output);
-    if (!sentry) {
-      return output;
-    }
+std::ostream& operator<<(std::ostream& output, const DataStruct& source) {
+std::ostream::sentry sentry(output);
+if (!sentry) {
+return output;
+}
 
-    IoFormatGuard formatGuard(output);
-    output << "(:key1 " << source.key1 << "d:key2 " << source.key2
-      << "ull:key3 \"" << source.key3 << "\":)";
-    return output;
-  }
+IoFormatGuard formatGuard(output);
+output << "(:key1 " << source.key1 << "d:key2 " << source.key2
+<< "ull:key3 \"" << source.key3 << "\":)";
+return output;
+}
 
-  IoFormatGuard::IoFormatGuard(std::basic_ios<char>& stream) :
-    stream_(stream),
-    fillCharacter_(stream.fill()),
-    width_(stream.width()),
-    precision_(stream.precision()),
-    formatFlags_(stream.flags())
-  {}
+IoFormatGuard::IoFormatGuard(std::basic_ios<char>& stream) :
+stream_(stream),
+fillCharacter_(stream.fill()),
+width_(stream.width()),
+precision_(stream.precision()),
+formatFlags_(stream.flags())
+{}
 
-  IoFormatGuard::~IoFormatGuard() {
-    stream_.fill(fillCharacter_);
-    stream_.width(width_);
-    stream_.precision(precision_);
-    stream_.flags(formatFlags_);
-  }
+IoFormatGuard::~IoFormatGuard() {
+stream_.fill(fillCharacter_);
+stream_.width(width_);
+stream_.precision(precision_);
+stream_.flags(formatFlags_);
+}
 
-  bool compareDataStructs(const DataStruct& first, const DataStruct& second) {
-    if (first.key1 != second.key1) {
-      return first.key1 < second.key1;
-    }
-    if (first.key2 != second.key2) {
-      return first.key2 < second.key2;
-    }
-    return first.key3.length() < second.key3.length();
-  }
+bool compareDataStructs(const DataStruct& first, const DataStruct& second) {
+if (first.key1 != second.key1) {
+return first.key1 < second.key1;
+}
+if (first.key2 != second.key2) {
+return first.key2 < second.key2;
+}
+return first.key3.length() < second.key3.length();
+}
 
 }

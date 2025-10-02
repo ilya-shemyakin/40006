@@ -10,31 +10,30 @@ using namespace nspace;
 
 int main()
 {
-  std::vector<DataStruct> data;
+std::vector<DataStruct> data;
 
-  DataStruct temp;
-  while (std::cin >> temp) {
-    data.push_back(temp);
+DataStruct temp;
+while (std::cin >> temp) {
+data.push_back(temp);
+std::cin >> std::ws;
+}
 
-    std::cin >> std::ws;
-  }
+if (!std::cin.eof()) {
+std::cin.clear();
+}
 
-  if (!std::cin.eof()) {
-    std::cin.clear();
-  }
+if (data.empty()) {
+std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
+return 0;
+}
 
-  if (data.empty()) {
-    std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
-    return 0;
-  }
+std::cout << "Atleast one supported record type" << std::endl;
 
-  std::cout << "Atleast one supported record type" << std::endl;
+std::sort(data.begin(), data.end(), compareDataStructs);
 
-  std::sort(data.begin(), data.end(), compareDataStructs);
+for (const auto& item : data) {
+std::cout << item << std::endl;
+}
 
-  for (const auto& item : data) {
-    std::cout << item << std::endl;
-  }
-
-  return 0;
+return 0;
 }
