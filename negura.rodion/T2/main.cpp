@@ -1,29 +1,17 @@
 #include <iostream>
-#include <iomanip>
 #include <vector>
 #include <algorithm>
 #include <iterator>
-#include <sstream>
-#include <string>
+#include <limits>
 #include "DataStruct.h"
 
-bool compareDataStructs(const DataStruct& a, const DataStruct& b) {
-  if (a.key1 != b.key1) {
-    return a.key1 < b.key1;
-  }
-  if (a.key2 != b.key2) {
-    return a.key2 < b.key2;
-  }
-  return a.key3.length() < b.key3.length();
-}
-
 int main() {
-  std::vector<DataStruct> data;
+  std::vector<nspace::DataStruct> data;
 
   while (!std::cin.eof()) {
     std::copy(
-      std::istream_iterator<DataStruct>(std::cin),
-      std::istream_iterator<DataStruct>(),
+      std::istream_iterator<nspace::DataStruct>(std::cin),
+      std::istream_iterator<nspace::DataStruct>(),
       std::back_inserter(data)
     );
 
@@ -33,13 +21,15 @@ int main() {
     }
   }
 
-  std::sort(data.begin(), data.end(), compareDataStructs);
-
-  std::copy(
-    data.begin(),
-    data.end(),
-    std::ostream_iterator<DataStruct>(std::cout, "\n")
-  );
+  if (!data.empty()) {
+    std::sort(data.begin(), data.end(), nspace::compareDataStruct);
+    std::copy(data.begin(), data.end(),
+      std::ostream_iterator<nspace::DataStruct>(std::cout, "\n"));
+    std::cout << "Atleast one supported record type" << std::endl;
+  }
+  else {
+    std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
+  }
 
   return 0;
 }

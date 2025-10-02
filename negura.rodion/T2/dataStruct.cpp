@@ -1,136 +1,138 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
-#include <sstream>
 #include "DataStruct.h"
 
-std::istream& operator>>(std::istream& in, DelimiterIO&& dest) {
-  std::istream::sentry sentry(in);
-  if (!sentry) {
-    return in;
-  }
-  char c = '0';
-  in >> c;
-  if (in && (c != dest.exp)) {
-    in.setstate(std::ios::failbit);
-  }
-  return in;
-}
-
-std::istream& operator>>(std::istream& in, DoubleIO&& dest) {
-  std::istream::sentry sentry(in);
-  if (!sentry) {
-    return in;
-  }
-  return in >> dest.ref >> DelimiterIO{ 'd' };
-}
-
-std::istream& operator>>(std::istream& in, UnsignedIO&& dest) {
-  std::istream::sentry sentry(in);
-  if (!sentry) {
-    return in;
-  }
-  std::string str;
-  char c;
-
-  while (in.get(c)) {
-    if (c == ':' || isspace(c)) {
-      in.unget();
-      break;
+namespace nspace {
+  std::istream& operator>>(std::istream& in, DelimeterIO&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry) {
+      return in;
     }
-    str.push_back(c);
+
+    char c;
+    in >> c;
+    if (in && (c != dest.exp)) {
+      in.setstate(std::ios::failbit);
+    }
+    return in;
   }
 
-  bool has_ull_suffix = (str.size() >= 3) &&
-    (tolower(str[str.size() - 1]) == 'l') &&
-    (tolower(str[str.size() - 2]) == 'l') &&
-    (tolower(str[str.size() - 3]) == 'u');
+  std::istream& operator>>(std::istream& in, StringIO&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry) {
+      return in;
+    }
+    return std::getline(in >> DelimeterIO{ '"' }, dest.ref, '"');
+  }
 
-  try {
-    if (!has_ull_suffix) {
+  std::istream& operator>>(std::istream& in, DoubleIO&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry) {
+      return in;
+    }
+    return in >> dest.ref >> DelimeterIO{ 'd' };
+  }
+
+  std::istream& operator>>(std::istream& in, UllLitIO&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry) return in;
+
+    unsigned long long value;
+    in >> value;
+
+    if (!in) {
+      return in;
+    }
+
+    char u, l1, l2;
+    in >> u >> l1 >> l2;
+
+    if (!in || !((u == 'u' && l1 == 'l' && l2 == 'l') ||
+      (u == 'U' && l1 == 'L' && l2 == 'L'))) {
       in.setstate(std::ios::failbit);
       return in;
     }
-    std::string number = str.substr(0, str.size() - 3);
-    dest.ref = std::stoull(number);
-  }
-  catch (...) {
-    in.setstate(std::ios::failbit);
-  }
-  return in;
-}
 
-std::istream& operator>>(std::istream& in, StringIO&& dest) {
-  std::istream::sentry sentry(in);
-  if (!sentry) {
+    dest.ref = value;
     return in;
   }
-  return std::getline(in >> DelimiterIO{ '"' }, dest.ref, '"');
-}
 
-std::istream& operator>>(std::istream& in, DataStruct& dest) {
-  DataStruct temp;
-  in >> DelimiterIO{ '(' } >> DelimiterIO{ ':' };
+  std::istream& operator>>(std::istream& in, DataStruct& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry) {
+      return in;
+    }
 
-  std::string label;
-  bool flag1 = false;
-  bool flag2 = false;
-  bool flag3 = false;
+    DataStruct temp;
+    in >> DelimeterIO{ '(' } >> DelimeterIO{ ':' };
 
-  while (in >> label) {
-    if (label == "key1") {
-      in >> DoubleIO{ temp.key1 } >> DelimiterIO{ ':' };
-      flag1 = true;
+    std::string key;
+    bool hasKey1 = false, hasKey2 = false, hasKey3 = false;
+
+    while (true) {
+      in >> key;
+      if (!in) break;
+
+      if (key == "key1") {
+        in >> DoubleIO{ temp.key1 } >> DelimeterIO{ ':' };
+        hasKey1 = true;
+      }
+      else if (key == "key2") {
+        in >> UllLitIO{ temp.key2 } >> DelimeterIO{ ':' };
+        hasKey2 = true;
+      }
+      else if (key == "key3") {
+        in >> StringIO{ temp.key3 } >> DelimeterIO{ ':' };
+        hasKey3 = true;
+      }
+      else if (key == ")") {
+        break;
+      }
+      else {
+        in.setstate(std::ios::failbit);
+        break;
+      }
     }
-    else if (label == "key2") {
-      in >> UnsignedIO{ temp.key2 } >> DelimiterIO{ ':' };
-      flag2 = true;
-    }
-    else if (label == "key3") {
-      in >> StringIO{ temp.key3 } >> DelimiterIO{ ':' };
-      flag3 = true;
-    }
-    else if (label == ")") {
-      break;
+
+    if (in && hasKey1 && hasKey2 && hasKey3) {
+      dest = temp;
     }
     else {
       in.setstate(std::ios::failbit);
-      break;
     }
+
+    return in;
   }
 
-  if (in && flag1 && flag2 && flag3) {
-    dest = temp;
-  }
-  else {
-    in.setstate(std::ios::failbit);
-  }
-  return in;
-}
+  std::ostream& operator<<(std::ostream& out, const DataStruct& data) {
+    std::ostream::sentry sentry(out);
+    if (!sentry) {
+      return out;
+    }
 
-std::ostream& operator<<(std::ostream& out, const DataStruct& data) {
-  std::ostream::sentry sentry(out);
-  if (!sentry) {
+    iofmtguard guard(out);
+    out << "(:key1 " << std::fixed << std::setprecision(1) << data.key1 << "d"
+      << ":key2 " << data.key2 << "ull"
+      << ":key3 \"" << data.key3 << "\":)";
     return out;
   }
-  iofmtguard fmtguard(out);
-  out << "(:key1 " << std::fixed << std::setprecision(1) << data.key1 << "d"
-    << ":key2 " << data.key2 << "ull"
-    << ":key3 \"" << data.key3 << "\":)";
-  return out;
-}
 
-iofmtguard::iofmtguard(std::basic_ios< char >& s) :
-  s_(s),
-  width_(s.width()),
-  fill_(s.fill()),
-  precision_(s.precision()),
-  fmt_(s.flags())
-{}
+  iofmtguard::iofmtguard(std::basic_ios<char>& s) :
+    s_(s), width_(s.width()), fill_(s.fill()),
+    precision_(s.precision()), fmt_(s.flags())
+  {}
 
-iofmtguard::~iofmtguard() {
-  s_.width(width_);
-  s_.fill(fill_);
-  s_.precision(precision_);
-  s_.flags(fmt_);
+  iofmtguard::~iofmtguard() {
+    s_.width(width_);
+    s_.fill(fill_);
+    s_.precision(precision_);
+    s_.flags(fmt_);
+  }
+
+  bool compareDataStruct(const DataStruct& a, const DataStruct& b) {
+    if (a.key1 != b.key1) return a.key1 < b.key1;
+    if (a.key2 != b.key2) return a.key2 < b.key2;
+    return a.key3.length() < b.key3.length();
+  }
 }
