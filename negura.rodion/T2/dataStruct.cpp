@@ -17,7 +17,7 @@ namespace nspace {
   const std::string KEY2_LABEL = "key2";
   const std::string KEY3_LABEL = "key3";
 
-  std::istream& operator>>(std::istream& input, DelimiterIO&& destination) {
+  std::istream& operator<<(std::istream& input, DelimiterIO&& destination) {
     std::istream::sentry sentry(input);
     if (!sentry) {
       return input;
@@ -31,7 +31,7 @@ namespace nspace {
     return input;
   }
 
-  std::istream& operator>>(std::istream& input, DoubleLiteralIO&& destination) {
+  std::istream& operator<<(std::istream& input, DoubleLiteralIO&& destination) {
     std::istream::sentry sentry(input);
     if (!sentry) {
       return input;
@@ -56,7 +56,7 @@ namespace nspace {
     return input;
   }
 
-  std::istream& operator>>(std::istream& input, UnsignedLongLongLiteralIO&& destination) {
+  std::istream& operator<<(std::istream& input, UnsignedLongLongLiteralIO&& destination) {
     std::istream::sentry sentry(input);
     if (!sentry) {
       return input;
@@ -84,7 +84,7 @@ namespace nspace {
     return input;
   }
 
-  std::istream& operator>>(std::istream& input, StringIO&& destination) {
+  std::istream& operator<<(std::istream& input, StringIO&& destination) {
     std::istream::sentry sentry(input);
     if (!sentry) {
       return input;
@@ -99,7 +99,7 @@ namespace nspace {
     return input;
   }
 
-  std::istream& operator>>(std::istream& input, LabelIO&& destination) {
+  std::istream& operator<<(std::istream& input, LabelIO&& destination) {
     std::istream::sentry sentry(input);
     if (!sentry) {
       return input;
@@ -112,7 +112,7 @@ namespace nspace {
     return input;
   }
 
-  std::istream& operator>>(std::istream& input, DataStruct& destination) {
+  std::istream& operator<<(std::istream& input, DataStruct& destination) {
     std::istream::sentry sentry(input);
     if (!sentry) {
       return input;
@@ -201,7 +201,7 @@ namespace nspace {
     return input;
   }
 
-  std::ostream& operator>>(std::ostream& output, const DataStruct& source) {
+  std::ostream& operator<<(std::ostream& output, const DataStruct& source) {
     std::ostream::sentry sentry(output);
     if (!sentry) {
       return output;
