@@ -39,7 +39,7 @@ namespace nspace {
 
     double value = 0.0;
     input >> value;
-    
+
     if (!input) {
       return input;
     }
@@ -64,7 +64,7 @@ namespace nspace {
 
     unsigned long long value = 0;
     input >> value;
-    
+
     if (!input) {
       return input;
     }
@@ -72,7 +72,7 @@ namespace nspace {
     // Пробуем прочитать суффикс 'ull', но если его нет - не ошибка
     char u = '\0', l1 = '\0', l2 = '\0';
     if (input >> u >> l1 >> l2) {
-      if (!(u == 'u' && l1 == 'l' && l2 == 'l') && 
+      if (!(u == 'u' && l1 == 'l' && l2 == 'l') &&
           !(u == 'U' && l1 == 'L' && l2 == 'L')) {
         input.putback(l2);
         input.putback(l1);
@@ -94,7 +94,7 @@ namespace nspace {
     if (!input) {
       return input;
     }
-    
+
     std::getline(input, destination.reference, QUOTE_CHAR);
     return input;
   }
@@ -125,7 +125,7 @@ namespace nspace {
 
     // Сохраняем состояние потока
     std::ios_base::iostate originalState = input.rdstate();
-    
+
     // Пробуем прочитать запись
     input >> DelimiterIO{ OPEN_BRACKET } >> DelimiterIO{ COLON };
 
