@@ -40,15 +40,15 @@ namespace nspace {
 
         unsigned long long value;
         in >> value;
-        
+
         if (!in) {
             return in;
         }
 
         char u, l1, l2;
         in >> u >> l1 >> l2;
-        
-        if (!in || !((u == 'u' && l1 == 'l' && l2 == 'l') || 
+
+        if (!in || !((u == 'u' && l1 == 'l' && l2 == 'l') ||
                      (u == 'U' && l1 == 'L' && l2 == 'L'))) {
             in.setstate(std::ios::failbit);
             return in;
@@ -110,17 +110,17 @@ namespace nspace {
         if (!sentry) {
             return out;
         }
-        
+
         iofmtguard guard(out);
         out << "(:key1 " << std::fixed << std::setprecision(1) << data.key1 << "d"
-            << ":key2 " << data.key2 << "ull" 
+            << ":key2 " << data.key2 << "ull"
             << ":key3 \"" << data.key3 << "\":)";
         return out;
     }
 
     iofmtguard::iofmtguard(std::basic_ios<char>& s) :
-        s_(s), width_(s.width()), fill_(s.fill()), 
-        precision_(s.precision()), fmt_(s.flags()) 
+        s_(s), width_(s.width()), fill_(s.fill()),
+        precision_(s.precision()), fmt_(s.flags())
     {}
 
     iofmtguard::~iofmtguard() {
