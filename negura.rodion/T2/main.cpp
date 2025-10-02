@@ -12,32 +12,27 @@ int main()
 {
   std::vector<DataStruct> data;
 
-  try {
-    std::copy(
-      std::istream_iterator<DataStruct>(std::cin),
-      std::istream_iterator<DataStruct>(),
-      std::back_inserter(data)
-    );
-  }
-  catch (...) {
+  while (!std::cin.eof())
+  {
+    if (std::cin.fail())
+    {
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+
+    DataStruct temp;
+    if (std::cin >> temp)
+    {
+      data.push_back(temp);
+    }
   }
 
-  if (!std::cin.eof() && std::cin.fail()) {
-    std::cin.clear();
-  }
-
-  if (data.empty()) {
+  if (data.empty())
+  {
     std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
     return 0;
   }
 
-  std::sort(data.begin(), data.end(), compareDataStructs);
-
-  std::copy(
-    data.begin(),
-    data.end(),
-    std::ostream_iterator<DataStruct>(std::cout, "\n")
-  );
-
+  std::cout << "Atleast one supported record type" << std::endl;
   return 0;
 }
