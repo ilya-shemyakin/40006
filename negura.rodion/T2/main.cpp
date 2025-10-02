@@ -1,39 +1,36 @@
 #include <iostream>
 #include <vector>
-#include <iterator>
 #include <algorithm>
-#include <limits>
-#include <fstream>
+#include <sstream>
 #include "DataStruct.h"
 
 using namespace nspace;
 
-int main()
-{
-std::vector<DataStruct> data;
+int main() {
+    std::vector<DataStruct> data;
+    std::string line;
 
-DataStruct temp;
-while (std::cin >> temp) {
-data.push_back(temp);
-std::cin >> std::ws;
-}
+    while (std::getline(std::cin, line)) {
+        std::istringstream iss(line);
+        DataStruct ds;
 
-if (!std::cin.eof()) {
-std::cin.clear();
-}
+        if (iss >> ds) {
+            data.push_back(ds);
+        }
+    }
 
-if (data.empty()) {
-std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
-return 0;
-}
+    if (data.empty()) {
+        std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
+        return 0;
+    }
 
-std::cout << "Atleast one supported record type" << std::endl;
+    std::cout << "Atleast one supported record type" << std::endl;
 
-std::sort(data.begin(), data.end(), compareDataStructs);
+    std::sort(data.begin(), data.end(), compareDataStructs);
 
-for (const auto& item : data) {
-std::cout << item << std::endl;
-}
+    for (const auto& item : data) {
+        std::cout << item << std::endl;
+    }
 
-return 0;
+    return 0;
 }
