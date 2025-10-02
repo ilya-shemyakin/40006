@@ -26,11 +26,5 @@ int main() {
 
     std::cout << "Atleast one supported record type" << std::endl;
 
-    std::sort(data.begin(), data.end(), compareDataStructs);
-
-    for (const auto& item : data) {
-        std::cout << item << std::endl;
-    }
-
     return 0;
 }
