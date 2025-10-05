@@ -1,35 +1,37 @@
 #include <iostream>
-#include <vector>
 #include <algorithm>
+#include <sstream>
+#include <string>
+#include <cassert>
 #include <iterator>
+#include <vector>
+#include <utility>
+#include <iomanip>
 #include <limits>
 #include "DataStruct.h"
 
 int main() {
-  std::vector<nspace::DataStruct> data;
+    using namespace nspace;
 
-  while (!std::cin.eof()) {
-    std::copy(
-      std::istream_iterator<nspace::DataStruct>(std::cin),
-      std::istream_iterator<nspace::DataStruct>(),
-      std::back_inserter(data)
-    );
-
-    if (std::cin.fail() && !std::cin.eof()) {
-      std::cin.clear();
-      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::vector<DataStruct> data;
+    while (!std::cin.eof()) {
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        std::copy(
+            std::istream_iterator<DataStruct>(std::cin),
+            std::istream_iterator<DataStruct>(),
+            std::back_inserter(data)
+        );
     }
-  }
 
-  if (!data.empty()) {
-    std::sort(data.begin(), data.end(), nspace::compareDataStruct);
-    std::copy(data.begin(), data.end(),
-      std::ostream_iterator<nspace::DataStruct>(std::cout, "\n"));
-    std::cout << "Atleast one supported record type" << std::endl;
-  }
-  else {
-    std::cout << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
-  }
+    std::sort(data.begin(), data.end(), compare);
 
-  return 0;
+    std::copy(
+        std::begin(data),
+        std::end(data),
+        std::ostream_iterator<DataStruct>(std::cout, "\n")
+    );
+    return 0;
 }

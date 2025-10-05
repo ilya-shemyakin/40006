@@ -1,50 +1,50 @@
-#ifndef DATASTRUCT_H
-#define DATASTRUCT_H
+#ifndef DATASTRUCT_H_
+#define DATASTRUCT_H_
 #include <iostream>
 
 namespace nspace {
-  struct DataStruct {
-    double key1;
-    unsigned long long key2; 
-    std::string key3;
-  };
+    struct DataStruct {
+        double key1;
+        unsigned long long key2;
+        std::string key3;
+    };
 
-  struct DelimeterIO {
-    char exp;
-  };
+    struct DelimiterIO {
+        char exp;
+    };
 
-  struct StringIO {
-    std::string& ref;
-  };
+    struct DoubleIO {
+        double& num;
+    };
 
-  struct DoubleIO {
-    double& ref;
-  };
+    struct UllLitIO {
+        unsigned long long& num;
+    };
 
-  struct UllLitIO {
-    unsigned long long& ref;
-  };
+    struct StringIO {
+        std::string& ref;
+    };
 
-  std::istream& operator>>(std::istream& in, DelimeterIO&& dest);
-  std::istream& operator>>(std::istream& in, StringIO&& dest);
-  std::istream& operator>>(std::istream& in, DoubleIO&& dest);
-  std::istream& operator>>(std::istream& in, UllLitIO&& dest);
-  std::istream& operator>>(std::istream& in, DataStruct& dest);
-  std::ostream& operator<<(std::ostream& out, const DataStruct& dest);
+    class iofmtguard
+    {
+    public:
+        iofmtguard(std::basic_ios<char>& s);
+        ~iofmtguard();
+    private:
+        std::basic_ios<char>& s_;
+        std::streamsize width_;
+        char fill_;
+        std::streamsize precision_;
+        std::basic_ios<char>::fmtflags fmt_;
+    };
 
-  bool compareDataStruct(const DataStruct& a, const DataStruct& b);
+    std::istream& operator>>(std::istream& in, DelimiterIO&& dest);
+    std::istream& operator>>(std::istream& in, StringIO&& dest);
+    std::istream& operator>>(std::istream& in, DoubleIO&& dbl);
+    std::istream& operator>>(std::istream& in, UllLitIO&& lit);
+    std::istream& operator>>(std::istream& in, DataStruct& dest);
+    std::ostream& operator<<(std::ostream& out, const DataStruct& dest);
 
-  class iofmtguard {
-  public:
-    iofmtguard(std::basic_ios<char>& s);
-    ~iofmtguard();
-  private:
-    std::basic_ios<char>& s_;
-    std::streamsize width_;
-    char fill_;
-    std::streamsize precision_;
-    std::basic_ios<char>::fmtflags fmt_;
-  };
+    bool compare(const DataStruct& a, const DataStruct& b);
 }
-
 #endif
